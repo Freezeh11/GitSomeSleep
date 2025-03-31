@@ -4,6 +4,7 @@
 2. MARLY G. VELASQUEZ (chibismol)
 3. GABRIEL LYLE Z. ESPELITA (Freezeh11)
 4. VEN BRYAN T. FLORES (vnbrynss)
+5. GERARD GRANT M. ESTELA (letjungcook11)
 
 Capstone Type: Game
 

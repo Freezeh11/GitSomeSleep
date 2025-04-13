@@ -25,10 +25,10 @@ public class GameApp extends GameApplication {
 
     @Override
     protected void initGame() {
-        InputStream is = getClass().getResourceAsStream("/assets/maps/test.tmx");
-        System.out.println(is != null ? "Found!" : "Not found!");
-        // Load the map first
-        MapManager.loadMap("test.tmx");
+//        InputStream is = getClass().getResourceAsStream("/assets/maps/test.tmx");
+//        System.out.println(is != null ? "Found!" : "Not found!");
+//        // Load the map first
+//        MapManager.loadMap("test.tmx");
         player = PlayerFactory.createPlayer(300, 300);
 
     }

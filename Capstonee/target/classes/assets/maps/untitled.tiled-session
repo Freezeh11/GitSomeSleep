@@ -1,0 +1,30 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "test.tmx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "test.tmx": {
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 372.5,
+                "y": 221.5
+            }
+        }
+    },
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 50,
+    "openFiles": [
+        "test.tmx"
+    ],
+    "project": "untitled.tiled-project",
+    "recentFiles": [
+        "test.tmx"
+    ]
+}

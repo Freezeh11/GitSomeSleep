@@ -18,13 +18,14 @@ public class PlayerComponent extends Component {
 
     private AnimationChannel animIdle, animWalk;
 
+    private static final double SPEED = 100;
+    private static final double JUMP_SPEED = -200;
 
     public PlayerComponent() {
+        Image image = image("player.png"); // Replace with your actual image file
 
-        Image image = image(" ");
-
-        animIdle = new AnimationChannel(image, 4, 16, 16, Duration.seconds(1), 1, 1);
-        animWalk = new AnimationChannel(image, 4, 16, 16, Duration.seconds(0.66), 0, 3);
+        animIdle = new AnimationChannel(image, 4, 16, 32, Duration.seconds(1), 1, 1);
+        animWalk = new AnimationChannel(image, 4, 16, 32, Duration.seconds(0.66), 0, 3);
 
         texture = new AnimatedTexture(animIdle);
         texture.loop();
@@ -32,18 +33,13 @@ public class PlayerComponent extends Component {
 
     @Override
     public void onAdded() {
-        entity.getTransformComponent().setScaleOrigin(new Point2D(8, 8)); // Adjusted for 16x16 size
+        entity.getTransformComponent().setScaleOrigin(new Point2D(8, 16)); // Adjusted for 16x16 size
         entity.getViewComponent().addChild(texture);
-
-        // Remove the listener for resetting jumps
-        physics.onGroundProperty().addListener((obs, old, isOnGround) -> {
-
-        });
     }
 
     @Override
     public void onUpdate(double tpf) {
-        if (physics.isMovingX()) {
+        if (physics != null && physics.isMovingX()) {
             if (texture.getAnimationChannel() != animWalk) {
                 texture.loopAnimationChannel(animWalk);
             }
@@ -55,23 +51,28 @@ public class PlayerComponent extends Component {
     }
 
     public void left() {
-        getEntity().setScaleX(-1);
-        physics.setVelocityX(-100);
+        if (physics != null) {
+            getEntity().setScaleX(-1);
+            physics.setVelocityX(-SPEED);
+        }
     }
 
     public void right() {
-        getEntity().setScaleX(1);
-        physics.setVelocityX(100);
+        if (physics != null) {
+            getEntity().setScaleX(1);
+            physics.setVelocityX(SPEED);
+        }
     }
 
     public void stop() {
-        physics.setVelocityX(0);
+        if (physics != null) {
+            physics.setVelocityX(0);
+        }
     }
 
     public void jump() {
-        if (!physics.isOnGround()) // Only allow jumping when on the ground
-            return;
-
-        physics.setVelocityY(-200);
+        if (physics != null && physics.isOnGround()) {
+            physics.setVelocityY(JUMP_SPEED);
+        }
     }
 }

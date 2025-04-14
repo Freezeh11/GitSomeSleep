@@ -1,9 +1,9 @@
-module org.example.capstonee {
+open module org.example.capstonee {
     requires javafx.controls;
     requires javafx.fxml;
 
     requires com.almasb.fxgl.all;
+    requires java.xml;
 
-    opens org.example.capstonee to javafx.fxml;
     exports org.example.capstonee;
 }

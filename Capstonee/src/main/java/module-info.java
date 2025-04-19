@@ -3,7 +3,7 @@ open module org.example.capstonee {
     requires javafx.fxml;
 
     requires com.almasb.fxgl.all;
-    requires java.xml;
+    requires java.desktop;
 
     exports org.example.capstonee;
 }

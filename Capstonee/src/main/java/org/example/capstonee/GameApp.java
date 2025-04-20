@@ -210,12 +210,21 @@ public class GameApp extends GameApplication {
         rhythmGameActive = true;
         rhythmGameState = RhythmGameState.READY;
 
+        // Reset viewport for rhythm game
+        Viewport viewport = getGameScene().getViewport();
+        viewport.setZoom(1.0); // Set zoom to normal for rhythm game
+        viewport.setX(0); // Reset X position
+        viewport.setY(0); // Reset Y position
+        viewport.unbind(); // Unbind from player
+
+        // Hide platformer entities
         getGameWorld().getEntitiesCopy().forEach(entity -> {
             if (entity.getType() != EntityType.PLATFORM) {
                 entity.setVisible(false);
             }
         });
         if (player != null) player.setVisible(false);
+
         List<Entity> entitiesToRemove = getGameWorld().getEntitiesByType(RhythmEntityType.RHYTHM_NOTE, RhythmEntityType.HIT_ZONE_MARKER);
         getGameWorld().removeEntities(entitiesToRemove);
 
@@ -331,6 +340,28 @@ public class GameApp extends GameApplication {
                 player.getComponent(PlayerComponent.class).stop();
             }
 
+        }, Duration.seconds(3));
+
+        runOnce(() -> {
+            // Restore platformer view
+            Viewport viewport = getGameScene().getViewport();
+            viewport.setZoom(3.0); // Restore zoom level
+            viewport.bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0); // Rebind to player
+
+            // Show platformer entities
+            getGameWorld().getEntitiesCopy().forEach(entity -> {
+                if (entity.getType() != EntityType.PLATFORM) {
+                    entity.setVisible(true);
+                }
+            });
+            if (player != null) player.setVisible(true);
+
+            rhythmGameActive = false;
+            rhythmGameState = RhythmGameState.READY;
+
+            if (player != null) {
+                player.getComponent(PlayerComponent.class).stop();
+            }
         }, Duration.seconds(3));
     }
 

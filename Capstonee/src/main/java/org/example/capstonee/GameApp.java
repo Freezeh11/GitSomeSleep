@@ -66,6 +66,7 @@ public class GameApp extends GameApplication {
     private RhythmGameState rhythmGameState = RhythmGameState.READY;
 
 
+
     private RhythmAudioPlayer rhythmAudioPlayer;
     private long rhythmGameStartTime = 0;
     private long songElapsedTimeMs = 0;
@@ -140,8 +141,9 @@ public class GameApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setSceneFactory(new SceneFactory());
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
-    }
+        settings.setApplicationMode(ApplicationMode.DEVELOPER); // Keep this if needed for debug tools
+        // Use the 'settings' object passed as an argument
+        }
 
     @Override
     protected void initInput() {
@@ -251,9 +253,10 @@ public class GameApp extends GameApplication {
         System.out.println("Starting rhythm game playing state...");
         rhythmGameState = RhythmGameState.PLAYING;
 
-        rhythmAudioPlayer.playMusic();
+        rhythmAudioPlayer.playMusic(); // <--- REMOVE this duplicate call
         rhythmGameStartTime = System.currentTimeMillis();
         songElapsedTimeMs = 0;
+
 
 
 
@@ -262,7 +265,7 @@ public class GameApp extends GameApplication {
         if (messageBottomLineText != null) messageBottomLineText.setVisible(false);
 
 
-        rhythmAudioPlayer.playMusic();
+
         rhythmGameStartTime = System.currentTimeMillis();
         songElapsedTimeMs = 0;
 
@@ -537,6 +540,13 @@ public class GameApp extends GameApplication {
 
     @Override
     protected void initGame() {
+
+        getSettings().setGlobalMusicVolume(1.0); // Use the static accessor FXGL.getSettings()
+        getSettings().setGlobalSoundVolume(1.0); // Use the static accessor FXGL.getSettings()
+        System.out.println("DEBUG: Global Music Volume set to: " + getSettings().getGlobalMusicVolume());
+        System.out.println("DEBUG: Global Sound Volume set to: " + getSettings().getGlobalSoundVolume());
+
+
 
         set("score", 0);
         set("combo", 0);

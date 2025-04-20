@@ -60,7 +60,7 @@ public class RhythmAudioPlayer {
         }
 
 
-        String assetPath = "music/songs/desperato.mp3";
+        String assetPath = "songs/desperato.wav";
         // -----------------------------------------------------------------
 
 

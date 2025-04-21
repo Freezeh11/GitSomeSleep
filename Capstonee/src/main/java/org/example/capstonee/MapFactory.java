@@ -82,4 +82,18 @@ public class MapFactory implements EntityFactory {
                 .zIndex(-1)
                 .build();
     }
+
+    @Spawns("movableBlock")
+    public Entity newMovableBlock(SpawnData data) {
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.DYNAMIC); // para molihok
+        physics.setFixtureDef(new FixtureDef().friction(100f));
+
+        return entityBuilder(data)
+                .type(EntityType.MOVABLE_BLOCK)
+                .with(physics)
+                .with(new CollidableComponent(true))
+                .viewWithBBox(new Rectangle(16, 16, Color.DARKGRAY))
+                .build();
+    }
 }

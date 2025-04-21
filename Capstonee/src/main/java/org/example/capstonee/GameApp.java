@@ -151,7 +151,7 @@ public class GameApp extends GameApplication {
         set("player", player);
         spawn("background");
         NPCLocations.spawnNPCs();
-
+        MovableBlockLocations.spawnBlocks();
         configurePlatformerViewport();
 
         System.out.println("Game Initialized - Platformer Mode Active.");

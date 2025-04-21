@@ -11,6 +11,7 @@ import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import javafx.scene.input.KeyCode;
+import org.example.capstonee.Cutscene.CutsceneHandler;
 import org.example.capstonee.RhythmGame.*;
 
 import java.util.Map;
@@ -40,21 +41,33 @@ public class GameApp extends GameApplication {
 
         getInput().addAction(new UserAction("Left") {
             @Override
-            protected void onAction() { if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).left(); }
+            protected void onAction() {
+                if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).left();
+            }
+
             @Override
-            protected void onActionEnd() { if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).stop(); }
+            protected void onActionEnd() {
+                if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).stop();
+            }
         }, KeyCode.A, VirtualButton.LEFT);
 
         getInput().addAction(new UserAction("Right") {
             @Override
-            protected void onAction() { if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).right(); }
+            protected void onAction() {
+                if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).right();
+            }
+
             @Override
-            protected void onActionEnd() { if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).stop(); }
+            protected void onActionEnd() {
+                if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).stop();
+            }
         }, KeyCode.D, VirtualButton.RIGHT);
 
         getInput().addAction(new UserAction("Jump") {
             @Override
-            protected void onActionBegin() { if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).jump(); }
+            protected void onActionBegin() {
+                if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).jump();
+            }
         }, KeyCode.W, VirtualButton.A);
 
 
@@ -68,6 +81,7 @@ public class GameApp extends GameApplication {
                             Entity npc = zone.getComponent(InteractionZoneComponent.class).getNpc();
                             String dialog = npc.getComponent(NPCComponent.class).getDialog();
                             System.out.println("NPC says: " + dialog + " - Starting Rhythm Game!");
+                            CutsceneHandler.playCutscene("gameCutscene_sample1.txt");
                             rhythmGameManager.start();
                             break;
                         }
@@ -79,25 +93,32 @@ public class GameApp extends GameApplication {
         }, KeyCode.E);
 
 
-
         getInput().addAction(new UserAction("RhythmLane0") {
             @Override
-            protected void onActionBegin() { rhythmGameManager.handleInput(0); }
+            protected void onActionBegin() {
+                rhythmGameManager.handleInput(0);
+            }
         }, KeyCode.H);
 
         getInput().addAction(new UserAction("RhythmLane1") {
             @Override
-            protected void onActionBegin() { rhythmGameManager.handleInput(1); }
+            protected void onActionBegin() {
+                rhythmGameManager.handleInput(1);
+            }
         }, KeyCode.J);
 
         getInput().addAction(new UserAction("RhythmLane2") {
             @Override
-            protected void onActionBegin() { rhythmGameManager.handleInput(2); }
+            protected void onActionBegin() {
+                rhythmGameManager.handleInput(2);
+            }
         }, KeyCode.K);
 
         getInput().addAction(new UserAction("RhythmLane3") {
             @Override
-            protected void onActionBegin() { rhythmGameManager.handleInput(3); }
+            protected void onActionBegin() {
+                rhythmGameManager.handleInput(3);
+            }
         }, KeyCode.L);
 
 

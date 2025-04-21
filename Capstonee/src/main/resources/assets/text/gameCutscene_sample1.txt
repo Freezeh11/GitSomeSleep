@@ -1,0 +1,7 @@
+1. name = Jungkook
+2. name = Obama
+1. image = bruh.png
+2. image = tuntunsahur.png
+
+1: Annyeonghaseyo! Tungtungtungtungtung sahur!
+2: Ni hAo! Jungkook !

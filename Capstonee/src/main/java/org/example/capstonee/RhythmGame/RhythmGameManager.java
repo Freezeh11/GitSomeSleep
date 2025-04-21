@@ -127,6 +127,7 @@ public class RhythmGameManager {
         audioPlayer.playMusic();
         gameStartTime = System.currentTimeMillis();
         songElapsedTimeMs = 0;
+        System.out.println("DEBUG: gameStartTime captured as: " + gameStartTime);
     }
 
     public void update(double tpf) {

@@ -8,6 +8,7 @@ import com.almasb.fxgl.entity.SpawnData;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +17,6 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import static org.example.capstonee.RhythmGame.RhythmGameFactory.*;
 
 public class RhythmGameManager {
-
 
     private static final double HIT_LINE_Y = 720 - 100;
     private static final double HIT_WINDOW_MS = 150;
@@ -61,14 +61,13 @@ public class RhythmGameManager {
     }
 
 
-    public void start() {
+    public void start(String beat) throws IOException {
         if (isActive) return;
 
         System.out.println("Starting Rhythm Game...");
         isActive = true;
         state = RhythmGameState.READY;
         songFinishedNaturally = false;
-
 
 
         Viewport viewport = gameScene.getViewport();
@@ -85,12 +84,13 @@ public class RhythmGameManager {
                 .forEach(e -> e.setVisible(false));
 
 
-
         cleanupEntities();
+
+        spawn("rhythmBackground");
 
 
         // TODO: replace ang "beatmaps/sample_song.beatmap" with em accurate one
-        beatmap = BeatmapLoader.loadBeatmap("beatmaps/sample_song.beatmap");
+        beatmap = BeatmapLoader.loadBeatmapFile("assets/music/songfile/thirdbosssong.txt");
         if (beatmap == null || beatmap.isEmpty()) {
             System.err.println("Error: Beatmap is empty or failed to load. Aborting rhythm game start.");
 
@@ -168,7 +168,7 @@ public class RhythmGameManager {
             long targetHitTime = noteComponent.getTargetHitTimestamp();
             long timeDiff = songElapsedTimeMs - targetHitTime; // positive = late, negative = early
 
-             if (Math.abs(timeDiff) <= HIT_WINDOW_MS && note.getY() >= HIT_LINE_Y - NOTE_SIZE * 1.5) {
+            if (Math.abs(timeDiff) <= HIT_WINDOW_MS && note.getY() >= HIT_LINE_Y - NOTE_SIZE * 1.5) {
                 if (Math.abs(timeDiff) < closestTimeDiff) {
                     closestTimeDiff = Math.abs(timeDiff);
                     bestMatch = note;
@@ -243,19 +243,31 @@ public class RhythmGameManager {
     }
 
 
-
     private void spawnNotes() {
+        // Add debug print before the loop
+        // System.out.println("DEBUG: spawnNotes() called. songElapsedTimeMs: " + songElapsedTimeMs + ", nextNoteIndexToSpawn: " + nextNoteIndexToSpawn + ", beatmap size: " + (beatmap != null ? beatmap.size() : "null"));
+
+        if (beatmap == null) return; // Safety check
+
         while (nextNoteIndexToSpawn < beatmap.size()) {
             NoteInfo nextNote = beatmap.get(nextNoteIndexToSpawn);
-            long spawnTimeMs = nextNote.getTimestampMs() - (long) FALL_DURATION_MS;
+            long targetHitTime = nextNote.getTimestampMs();
+            long spawnTimeMs = targetHitTime - (long) FALL_DURATION_MS; // Time relative to song start when this note *should* spawn
+
+
+            // Add debug print inside the loop but before the check
+            // System.out.println("DEBUG: Checking Note #" + nextNoteIndexToSpawn + " (Target: " + targetHitTime + "ms, Lane: " + nextNote.getLaneIndex() + ") - Spawn Time: " + spawnTimeMs + "ms");
+
 
             if (songElapsedTimeMs >= spawnTimeMs) {
+                System.out.println("DEBUG: Spawning Note #" + nextNoteIndexToSpawn + " (Target: " + targetHitTime + "ms, Lane: " + nextNote.getLaneIndex() + ") at song time " + songElapsedTimeMs + "ms");
                 spawn(RhythmEntityType.RHYTHM_NOTE.toString(), new SpawnData(0, 0) // Position is set by factory/component
                         .put("laneIndex", nextNote.getLaneIndex())
                         .put("targetHitTimestamp", nextNote.getTimestampMs()));
                 nextNoteIndexToSpawn++;
             } else {
-                break;
+                // System.out.println("DEBUG: Note #" + nextNoteIndexToSpawn + " not ready to spawn yet. songElapsedTimeMs: " + songElapsedTimeMs + ", requires: " + spawnTimeMs);
+                break; // Notes are sorted, so if this one isn't ready, neither are subsequent ones
             }
         }
     }
@@ -273,7 +285,7 @@ public class RhythmGameManager {
                 resetCombo();
                 audioPlayer.playMissSound();
                 missedNotes.add(noteEntity);
-                gameUI.addFadingText("MISS", LANE_X_POSITIONS[noteComponent.getLaneIndex()], HIT_LINE_Y + NOTE_SIZE/2.0, Color.RED);
+                gameUI.addFadingText("MISS", LANE_X_POSITIONS[noteComponent.getLaneIndex()], HIT_LINE_Y + NOTE_SIZE / 2.0, Color.RED);
             }
         }
         missedNotes.forEach(Entity::removeFromWorld);

@@ -75,6 +75,7 @@ public class RhythmGameUI {
     }
 
     public void showReadyScreen() {
+
         scoreText.setVisible(false);
         comboText.setVisible(false);
         messageBox.setVisible(true);

@@ -21,6 +21,15 @@ import static org.example.capstonee.EntityType.*;
 
 public class MapFactory implements EntityFactory {
 
+    @Spawns("rhythmBackground")
+    public Entity rhythmBackground(SpawnData data) {
+        return entityBuilder()
+                .view(new ScrollingBackgroundView(texture("background/pixelatedliyue.png").getImage(), getAppWidth(), getAppHeight()))
+                .zIndex(-1)
+                .with(new IrremovableComponent())
+                .build();
+    }
+
     @Spawns("background")
     public Entity newBackground(SpawnData data) {
         return entityBuilder()

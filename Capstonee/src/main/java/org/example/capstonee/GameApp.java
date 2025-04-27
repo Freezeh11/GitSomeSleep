@@ -5,6 +5,7 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.Viewport;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
@@ -32,6 +33,7 @@ public class GameApp extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setSceneFactory(new SceneFactory());
+        settings.setMainMenuEnabled(true);
         settings.setApplicationMode(ApplicationMode.DEVELOPER); // Or ApplicationMode.RELEASE
 
     }
@@ -81,14 +83,15 @@ public class GameApp extends GameApplication {
                             Entity npc = zone.getComponent(InteractionZoneComponent.class).getNpc();
                             String dialog = npc.getComponent(NPCComponent.class).getDialog();
                             System.out.println("NPC says: " + dialog + " - Starting Rhythm Game!");
-                            CutsceneHandler.playCutscene("gameCutscene_sample1.txt");
-                            rhythmGameManager.start();
+                            CutsceneHandler.playCutscene("gameCutscene_sample1.txt", npc, rhythmGameManager);
                             break;
                         }
                     }
+
                 } else if (rhythmGameManager.getState() == RhythmGameState.GAME_ENDED) {
                     rhythmGameManager.finalizeAndReturn();
                 }
+
             }
         }, KeyCode.E);
 

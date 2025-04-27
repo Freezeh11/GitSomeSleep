@@ -139,6 +139,7 @@ public class GameApp extends GameApplication {
     @Override
     protected void initGame() {
 
+
         rhythmAudioPlayer = new RhythmAudioPlayer();
         rhythmGameUI = new RhythmGameUI(getGameScene());
         rhythmGameManager = new RhythmGameManager(getGameScene(), rhythmGameUI, rhythmAudioPlayer);
@@ -152,7 +153,8 @@ public class GameApp extends GameApplication {
 
         player = spawn("player", 16, 16);
         set("player", player);
-        spawn("background");
+        spawn("background") ;
+
         NPCLocations.spawnNPCs();
 
         configurePlatformerViewport();

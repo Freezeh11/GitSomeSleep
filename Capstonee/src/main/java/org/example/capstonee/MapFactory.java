@@ -12,14 +12,18 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
+import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Point2D;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.example.capstonee.RhythmGame.RhythmEntityType;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import static org.example.capstonee.EntityType.*;
 
 public class MapFactory implements EntityFactory {
+
 
     @Spawns("rhythmBackground")
     public Entity rhythmBackground(SpawnData data) {
@@ -29,6 +33,9 @@ public class MapFactory implements EntityFactory {
                 .with(new IrremovableComponent())
                 .build();
     }
+
+
+
 
     @Spawns("background")
     public Entity newBackground(SpawnData data) {

@@ -1,5 +1,6 @@
 package org.example.capstonee.RhythmGame;
 
+import com.almasb.fxgl.animation.Interpolators;
 import com.almasb.fxgl.app.scene.GameScene;
 import com.almasb.fxgl.app.scene.Viewport;
 import com.almasb.fxgl.dsl.FXGL;
@@ -7,6 +8,8 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.scene.Node;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,6 +80,7 @@ public class RhythmGameManager {
         viewport.unbind();
 
 
+
         Entity player = geto("player");
         if (player != null) player.setVisible(false);
         getGameWorld().getEntitiesCopy().stream()
@@ -85,8 +89,17 @@ public class RhythmGameManager {
 
 
         cleanupEntities();
+        Entity entity = spawn("rhythmBackground");
+        animationBuilder()
+                .duration(Duration.seconds(2))
+                .interpolator(Interpolators.EXPONENTIAL.EASE_OUT())
+                .fade(entity)
+                .from(0.0)
+                .to(1.0)
+                .buildAndPlay();
 
-        spawn("rhythmBackground");
+
+
 
 
         // TODO: replace ang "beatmaps/sample_song.beatmap" with em accurate one
@@ -120,7 +133,6 @@ public class RhythmGameManager {
 
     public void startPlaying() {
         if (!isActive || state != RhythmGameState.READY) return;
-
         System.out.println("Starting Rhythm Game Play...");
         state = RhythmGameState.PLAYING;
         gameUI.showPlayingUI();
@@ -290,6 +302,8 @@ public class RhythmGameManager {
         }
         missedNotes.forEach(Entity::removeFromWorld);
     }
+
+
 
     private void resetCombo() {
         if (geti("combo") > 0) {

@@ -10,5 +10,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="github.almasb.fxgl" level="project" />
     <orderEntry type="library" name="github.almasb.fxgl.scene" level="project" />
+    <orderEntry type="library" name="github.almasb.fxgl1" level="project" />
   </component>
 </module>

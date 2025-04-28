@@ -24,8 +24,7 @@ import static org.example.capstonee.EntityType.*;
 
 public class MapFactory implements EntityFactory {
 
-
-    @Spawns("rhythmBackground")
+@Spawns("rhythmBackground")
     public Entity rhythmBackground(SpawnData data) {
         return entityBuilder()
                 .view(new ScrollingBackgroundView(texture("background/pixelatedliyue.png").getImage(), getAppWidth(), getAppHeight()))

@@ -1,18 +1,24 @@
 package org.example.capstonee.RhythmGame;
 
+import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
-import com.almasb.fxgl.texture.Texture; // Import Texture
-import javafx.scene.paint.Color; // Keep Color if using it elsewhere or for debug
-import javafx.scene.shape.Circle; // Keep if you still use it (though we're removing it from spawns)
-import javafx.scene.shape.Rectangle; // Keep if you still use it
+import javafx.geometry.Point2D;
+import com.almasb.fxgl.particle.ParticleComponent;
+import com.almasb.fxgl.particle.ParticleEmitter;
+import com.almasb.fxgl.texture.Texture;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
+import org.example.capstonee.RhythmGame.GlowEffectComponent;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class RhythmGameFactory implements EntityFactory {
 
+    // ... (Keep existing constants and methods like NOTE_SIZE, LANE_X_POSITIONS, etc.) ...
     public static final int NOTE_SIZE = 60;
     public static final double NOTE_SPEED = 400; // pixels per second
 
@@ -40,28 +46,34 @@ public class RhythmGameFactory implements EntityFactory {
     private String getNoteTextureName(int laneIndex) {
         // Ensure lane index is within bounds for consistent mapping
         switch (laneIndex % NUM_LANES_INTERNAL) {
-            case 0: return "markers/moranote.png";
-            case 1: return "markers/moranote.png";
-            case 2: return "markers/moranote.png";
-            case 3: return "markers/moranote.png";
-            default: return "markers/moranote.png";// Fallback texture
+            case 0:
+                return "markers/moranote.png";
+            case 1:
+                return "markers/moranote.png";
+            case 2:
+                return "markers/moranote.png";
+            case 3:
+                return "markers/moranote.png";
+            default:
+                return "markers/moranote.png";// Fallback texture
         }
     }
 
     // Helper method to get the texture file name for markers (can be the same or different)
     private String getMarkerTextureName(int laneIndex) {
         // For simplicity, let's use the same textures as the notes for markers
-
-
-
-         switch (laneIndex % NUM_LANES_INTERNAL) {
-             case 0: return "notes/hilichurlhitmarker.png"; // Example: points to assets/textures/notes/note_orange.png
-             case 1: return "notes/hilichurlhitmarker.png";  // Example: points to assets/textures/notes/note_green.png
-             case 2: return "notes/hilichurlhitmarker.png";   // Example: points to assets/textures/notes/note_blue.png
-             case 3: return "notes/hilichurlhitmarker.png";   // Example: points to assets/textures/notes/note_pink.png
-             default: return "notes/hilichurlhitmarker.png";
-         }
-
+        switch (laneIndex % NUM_LANES_INTERNAL) {
+            case 0:
+                return "notes/hilichurlhitmarker.png"; // Example: points to assets/textures/notes/note_orange.png
+            case 1:
+                return "notes/hilichurlhitmarker.png";  // Example: points to assets/textures/notes/note_green.png
+            case 2:
+                return "notes/hilichurlhitmarker.png";   // Example: points to assets/textures/notes/note_blue.png
+            case 3:
+                return "notes/hilichurlhitmarker.png";   // Example: points to assets/textures/notes/note_pink.png
+            default:
+                return "notes/hilichurlhitmarker.png";
+        }
     }
 
 
@@ -69,60 +81,72 @@ public class RhythmGameFactory implements EntityFactory {
     public Entity newRhythmNote(SpawnData data) {
         int laneIndex = data.get("laneIndex");
         long targetHitTimestamp = data.get("targetHitTimestamp");
-
         double spawnX = LANE_X_POSITIONS[laneIndex] - NOTE_SIZE / 2.0;
         double spawnY = NOTE_SPAWN_Y;
-
-        // Get the texture name based on the lane
         String textureName = getNoteTextureName(laneIndex);
-
-        // Load the texture and size it to NOTE_SIZE x NOTE_SIZE
         Texture noteTexture = texture(textureName, NOTE_SIZE, NOTE_SIZE);
 
         return entityBuilder(data)
                 .type(RhythmEntityType.RHYTHM_NOTE)
                 .at(spawnX, spawnY)
-                // Use viewWithBBox with the texture. FXGL will create a bounding box based on the texture size.
                 .viewWithBBox(noteTexture)
-                // Pass NOTE_SPEED to the component as it's used there for movement
                 .with(new RhythmNoteComponent(NOTE_SPEED, targetHitTimestamp, laneIndex))
-                .zIndex(10) // Ensure notes appear above markers and background
+                .zIndex(10) // Notes Z-index
                 .build();
+    }
+
+    @Spawns("glowEffect")
+    public Entity newGlowEffect(SpawnData data) {
+        Entity entity = FXGL.entityBuilder(data)
+                .at(data.getX(), data.getY())
+                // *** Use the intended particle texture ***
+                .view("particles/yellow_particle.png")
+                .with(new GlowEffectComponent())
+                // *** Adjust Z-Index: Above notes (10) and markers (0), below potential high UI ***
+                .zIndex(15)
+                .build();
+        return entity;
+    }
+
+    @Spawns("sparkEffect")
+    public Entity newSparkEffect(SpawnData data) {
+        ParticleEmitter emitter = new ParticleEmitter();
+        emitter.setSourceImage(image("particles/yellow_particle.png"));
+        emitter.setNumParticles(20);
+        emitter.setSize(2, 4);
+        emitter.setColor(Color.YELLOW);
+        emitter.setExpireFunction(i -> Duration.seconds(0.5));
+        emitter.setVelocityFunction(i -> new Point2D(FXGLMath.random(-150, 150), FXGLMath.random(-150, 150)));
+
+        Entity sparkEntity = entityBuilder(data)
+                .at(data.getX(), data.getY())
+                .with(new ParticleComponent(emitter))
+                // Make sure sparks are visible too
+                .zIndex(16) // Slightly above glow? Or same level?
+                .build();
+
+        getGameTimer().runOnceAfter(sparkEntity::removeFromWorld, Duration.seconds(0.6));
+        return sparkEntity;
     }
 
     @Spawns("HIT_ZONE_MARKER")
     public Entity newHitZoneMarker(SpawnData data) {
         int laneIndex = data.get("laneIndex");
         double hitLineY = data.get("hitLineY");
-
-        // Position the marker centered within the lane at the hit line Y
         double markerX = LANE_X_POSITIONS[laneIndex] - NOTE_SIZE / 2.0;
-        // Position the *top-left* of the texture such that its *center* is at hitLineY
-        double markerY = hitLineY - NOTE_SIZE / 2.0;
+        // Adjust marker Y to be centered on the hit line
+        double markerY = hitLineY - NOTE_SIZE / 2.0; // Center vertically on hit line
 
-
-        // Get the texture name for the marker
         String textureName = getMarkerTextureName(laneIndex);
-
-        // Load the texture and size it
         Texture markerTexture = texture(textureName, NOTE_SIZE, NOTE_SIZE);
-
-        // Optional: Add some visual effect to the marker to distinguish it from notes,
-        // e.g., make it slightly transparent or change its blend mode if needed,
-        // but this depends on the image content itself.
-        // markerTexture.setOpacity(0.5); // Example transparency
-
 
         return entityBuilder(data)
                 .type(RhythmEntityType.HIT_ZONE_MARKER)
-                .at(markerX, markerY)
-                // Use view() as BoundingBox is likely not needed for the marker itself.
+                .at(markerX, markerY) // Position based on lane and hit line
                 .view(markerTexture)
-                .zIndex(0) // Between background/lanes and notes
+                .zIndex(0) // Behind notes
                 .build();
     }
 
-    // The getNoteColor helper is no longer used for visuals but might be needed elsewhere.
-    // You can remove it if it's not called from other classes.
-    // private Color getNoteColor(int laneIndex) { ... }
+    // Ensure you have a spawner for the rhythm background
 }

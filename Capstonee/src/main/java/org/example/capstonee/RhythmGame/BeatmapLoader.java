@@ -11,7 +11,7 @@ public class BeatmapLoader {
     private static final int NUM_LANES = 4; // assuming 4 lanes
     private static Random random = new Random();
 
-    private static final long DEFAULT_INITIAL_DELAY_MS = 2000;
+    private static final long DEFAULT_INITIAL_DELAY_MS = 5000;
     private static final int DEFAULT_FIRST_NOTE_LANE = 1;
 
 

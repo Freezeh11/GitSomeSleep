@@ -20,7 +20,7 @@ public class RhythmAudioPlayer {
     private static final String HIT_SOUND_PATH = "sounds/hit.wav";
     private static final String MISS_SOUND_PATH = "sounds/miss.wav";
     // Default music path, can be overridden or passed to loadMusic
-    private static final String DEFAULT_MUSIC_PATH = "songs/desperato.wav";
+    private static final String DEFAULT_MUSIC_PATH = "songs/zhongli.wav";
 
 
     public RhythmAudioPlayer() {

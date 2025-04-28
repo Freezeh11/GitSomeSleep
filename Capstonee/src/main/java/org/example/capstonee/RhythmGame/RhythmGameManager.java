@@ -194,8 +194,9 @@ public class RhythmGameManager {
             audioPlayer.playHitSound();
 
             // *** Spawn the glow effect at the HIT ZONE MARKER position ***
-            double markerCenterX = LANE_X_POSITIONS[laneIndex]; // Center X of the lane
-            double markerCenterY = HIT_LINE_Y; // Center Y of the hit line itself
+            double baseX = LANE_X_POSITIONS[laneIndex];
+            double markerCenterX = baseX - 95; // Center X of the lane
+            double markerCenterY = HIT_LINE_Y - 100; // Center Y of the hit line itself
             // SpawnData now uses the marker's center coordinates
             FXGL.spawn("glowEffect", new SpawnData(markerCenterX, markerCenterY));
 

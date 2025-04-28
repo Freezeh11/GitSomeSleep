@@ -1,5 +1,5 @@
 package org.example.capstonee;
 
-public enum EntityType {
+public enum     EntityType {
     PLAYER, PLATFORM, NPC, INTERACTION_ZONE, RHYTHMBACKGROUND1
 }

@@ -97,14 +97,22 @@ public class RhythmGameFactory implements EntityFactory {
 
     @Spawns("glowEffect")
     public Entity newGlowEffect(SpawnData data) {
+
+        // *** DEFINE YOUR DESIRED SIZE HERE ***
+        double desiredWidth = 200;  // Example: Make the glow effect 40 pixels wide
+        double desiredHeight = 200; // Example: Make the glow effect 40 pixels tall
+
+        // Load the texture with the specified size
+        Texture glowTexture = FXGL.texture("particles/yellow_particle.png", desiredWidth, desiredHeight);
+
         Entity entity = FXGL.entityBuilder(data)
                 .at(data.getX(), data.getY())
-                // *** Use the intended particle texture ***
-                .view("particles/yellow_particle.png")
+                // *** Use the sized texture for the view ***
+                .view(glowTexture)
                 .with(new GlowEffectComponent())
-                // *** Adjust Z-Index: Above notes (10) and markers (0), below potential high UI ***
-                .zIndex(15)
+                .zIndex(15) // Ensure it's visible above notes/markers
                 .build();
+
         return entity;
     }
 

@@ -10,7 +10,7 @@ public class GlowEffectComponent extends Component {
 
     private ColorAdjust glowEffect;
     // Adjust speed - 0.03 might be a good balance (fades in ~0.5s)
-    private double fadeSpeed = 0.03;
+    private double fadeSpeed = 0.01;
 
     public GlowEffectComponent() {
         // Simpler ColorAdjust: Just max saturation, maybe slight brightness boost.

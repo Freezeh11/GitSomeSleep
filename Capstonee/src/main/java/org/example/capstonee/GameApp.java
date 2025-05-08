@@ -1,9 +1,11 @@
 package org.example.capstonee;
 
+
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.app.scene.SceneFactory;
+// Remove the old SceneFactory import if it was just the default one.
+// import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.Viewport;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
@@ -13,18 +15,25 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import javafx.scene.input.KeyCode;
 import org.example.capstonee.Cutscene.CutsceneHandler;
+import org.example.capstonee.Menu.MenuSceneFactory;
 import org.example.capstonee.RhythmGame.*;
+import org.example.capstonee.Menu.MenuSceneFactory; // <--- IMPORT YOUR NEW FACTORY
+
 
 import java.util.Map;
 
+
 import static com.almasb.fxgl.dsl.FXGL.*;
 
+
 public class GameApp extends GameApplication {
+
 
     private Entity player;
     private RhythmAudioPlayer rhythmAudioPlayer;
     private RhythmGameUI rhythmGameUI;
     private RhythmGameManager rhythmGameManager;
+
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -32,14 +41,21 @@ public class GameApp extends GameApplication {
         settings.setVersion("0.2");
         settings.setWidth(1280);
         settings.setHeight(720);
-        settings.setSceneFactory(new SceneFactory());
+        // settings.setSceneFactory(new SceneFactory()); // <--- REMOVE THIS LINE (or the default one)
+        settings.setSceneFactory(new MenuSceneFactory()); // <--- ADD THIS LINE
         settings.setMainMenuEnabled(true);
+        // settings.setGameMenuEnabled(true); // This is usually enabled by default if MainMenu is enabled
         settings.setApplicationMode(ApplicationMode.DEVELOPER); // Or ApplicationMode.RELEASE
-
     }
+
+
+
+
+
 
     @Override
     protected void initInput() {
+
 
         getInput().addAction(new UserAction("Left") {
             @Override
@@ -47,11 +63,13 @@ public class GameApp extends GameApplication {
                 if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).left();
             }
 
+
             @Override
             protected void onActionEnd() {
                 if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).stop();
             }
         }, KeyCode.A, VirtualButton.LEFT);
+
 
         getInput().addAction(new UserAction("Right") {
             @Override
@@ -59,11 +77,13 @@ public class GameApp extends GameApplication {
                 if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).right();
             }
 
+
             @Override
             protected void onActionEnd() {
                 if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).stop();
             }
         }, KeyCode.D, VirtualButton.RIGHT);
+
 
         getInput().addAction(new UserAction("Jump") {
             @Override
@@ -71,6 +91,8 @@ public class GameApp extends GameApplication {
                 if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).jump();
             }
         }, KeyCode.W, VirtualButton.A);
+
+
 
 
         getInput().addAction(new UserAction("Interact / Confirm") {
@@ -88,12 +110,16 @@ public class GameApp extends GameApplication {
                         }
                     }
 
+
                 } else if (rhythmGameManager.getState() == RhythmGameState.GAME_ENDED) {
                     rhythmGameManager.finalizeAndReturn();
                 }
 
+
             }
         }, KeyCode.E);
+
+
 
 
         getInput().addAction(new UserAction("RhythmLane0") {
@@ -103,12 +129,14 @@ public class GameApp extends GameApplication {
             }
         }, KeyCode.H);
 
+
         getInput().addAction(new UserAction("RhythmLane1") {
             @Override
             protected void onActionBegin() {
                 rhythmGameManager.handleInput(1);
             }
         }, KeyCode.J);
+
 
         getInput().addAction(new UserAction("RhythmLane2") {
             @Override
@@ -117,12 +145,15 @@ public class GameApp extends GameApplication {
             }
         }, KeyCode.K);
 
+
         getInput().addAction(new UserAction("RhythmLane3") {
             @Override
             protected void onActionBegin() {
                 rhythmGameManager.handleInput(3);
             }
         }, KeyCode.L);
+
+
 
 
         getInput().addAction(new UserAction("RhythmStart") {
@@ -136,8 +167,12 @@ public class GameApp extends GameApplication {
     }
 
 
+
+
     @Override
     protected void initGame() {
+
+
 
 
         rhythmAudioPlayer = new RhythmAudioPlayer();
@@ -145,32 +180,41 @@ public class GameApp extends GameApplication {
         rhythmGameManager = new RhythmGameManager(getGameScene(), rhythmGameUI, rhythmAudioPlayer);
         rhythmGameManager.setOnGameEndCallback(this::returnToPlatformerMode);
 
+
         getGameWorld().addEntityFactory(new MapFactory());
         getGameWorld().addEntityFactory(new RhythmGameFactory());
 
+
         Level level = getAssetLoader().loadLevel("tmx/test.tmx", new TMXLevelLoader());
         getGameWorld().setLevel(level);
+
 
         player = spawn("player", 16, 16);
         set("player", player);
         spawn("background") ;
 
+
         NPCLocations.spawnNPCs();
 
+
         configurePlatformerViewport();
+
 
         System.out.println("Game Initialized - Platformer Mode Active.");
         System.out.println("DEBUG: Global Music Volume: " + getSettings().getGlobalMusicVolume());
         System.out.println("DEBUG: Global Sound Volume: " + getSettings().getGlobalSoundVolume());
     }
 
+
     @Override
     protected void initGameVars(Map<String, Object> vars) {
+
 
         vars.put("score", 0);
         vars.put("combo", 0);
         vars.put("songElapsedTimeMs", 0L);
     }
+
 
     @Override
     protected void onUpdate(double tpf) {
@@ -178,6 +222,8 @@ public class GameApp extends GameApplication {
             rhythmGameManager.update(tpf);
         }
     }
+
+
 
 
     private void configurePlatformerViewport() {
@@ -188,8 +234,10 @@ public class GameApp extends GameApplication {
         viewport.setZoom(3.0);
     }
 
+
     private void returnToPlatformerMode() {
         System.out.println("Transitioning back to Platformer Mode...");
+
 
         configurePlatformerViewport();
         getGameWorld().getEntitiesCopy().forEach(e -> e.setVisible(true));
@@ -198,10 +246,13 @@ public class GameApp extends GameApplication {
             player.getComponent(PlayerComponent.class).stop();
         }
 
+
         rhythmGameUI.hideAll();
+
 
         System.out.println("Platformer Mode Restored.");
     }
+
 
     public static void main(String[] args) {
         launch(args);

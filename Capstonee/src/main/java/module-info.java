@@ -5,6 +5,7 @@ open module org.example.capstonee {
 
     requires com.almasb.fxgl.all;
     requires java.desktop;
+    requires com.fasterxml.jackson.core;
 
     exports org.example.capstonee;
 }

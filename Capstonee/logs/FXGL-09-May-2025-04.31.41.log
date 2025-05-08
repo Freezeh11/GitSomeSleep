@@ -1,0 +1,96 @@
+04:31:38.497 [main                     ] DEBUG Logger               - Configured Logger
+04:31:38.508 [main                     ] DEBUG GameApplication      - Logging settings
+Title: Platformer with Rhythm
+Version: 0.2
+Width: 1280
+Height: 720
+Fullscreen: false
+Intro: false
+Profiling: false
+Single step:false
+App Mode: DEVELOPER
+Menu Key: ESCAPE
+Stage Style: DECORATED
+Scene Factory: class org.example.capstonee.Menu.MenuSceneFactory
+
+04:31:38.775 [JavaFX Application Thread] DEBUG FXGLApplication      - Initializing FXGL
+04:31:38.777 [JavaFX Application Thread] INFO  Engine               - FXGL-21.1 (27.03.2024 07.52) on MAC (J:22.0.2 FX:22.0.1)
+04:31:38.777 [JavaFX Application Thread] DEBUG Engine               - JRE Vendor Name: Oracle Corporation
+04:31:38.777 [JavaFX Application Thread] DEBUG Engine               - Running on OS: Mac OS X version 15.3.2
+04:31:38.777 [JavaFX Application Thread] DEBUG Engine               - Architecture: aarch64
+04:31:38.777 [JavaFX Application Thread] INFO  Engine               - Source code and latest versions at: https://github.com/AlmasB/FXGL
+04:31:38.777 [JavaFX Application Thread] INFO  Engine               -       Ask questions and discuss at: https://github.com/AlmasB/FXGL/discussions
+04:31:38.777 [JavaFX Application Thread] INFO  Engine               -              Join the FXGL chat at: https://gitter.im/AlmasB/FXGL
+04:31:38.813 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Creating a JavaFX scene
+04:31:38.830 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Target settings size: 1280.0 x 720.0
+04:31:38.830 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Scaled scene size:    1280.0 x 720.0
+04:31:38.830 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Scaled ratio: (1.0, 1.0)
+04:31:38.830 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Set initial scene to FXGLStartupScene
+04:31:38.831 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Opening main window
+04:31:38.884 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Window border size: (0.0, 28.0)
+04:31:38.884 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Scaled size: 1280.0 x 720.0
+04:31:38.885 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Scaled ratio: (1.0, 1.0)
+04:31:38.885 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Scene size: 1280.0 x 720.0
+04:31:38.885 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Stage size: 1280.0 x 748.0
+04:31:38.888 [FXGL Background Thread 1 ] DEBUG Engine               - Initializing environment variables
+04:31:38.916 [FXGL Background Thread 1 ] DEBUG FXGLAssetLoaderServi - User app class for loading assets: class org.example.capstonee.GameApp
+04:31:38.916 [FXGL Background Thread 1 ] DEBUG GameApplicationServi - Applying CSS: fxgl_dark.css
+04:31:38.917 [FXGL Background Thread 1 ] DEBUG FXGLAssetLoaderServi - Loading from file system: jar:file:///Users/ajaxestela/.m2/repository/com/github/almasb/fxgl/21.1/fxgl-21.1.jar!/fxglassets/ui/css/fxgl_dark.css
+04:31:38.951 [FXGL Background Thread 1 ] DEBUG GameApplicationServi - Initializing application scenes
+04:31:39.042 [FXGL Background Thread 1 ] DEBUG GameWorld            - Game world initialized
+04:31:39.078 [FXGL Background Thread 1 ] DEBUG PhysicsWorld         - Physics world initialized: appHeight=720, physics.ppm=50.0
+04:31:39.078 [FXGL Background Thread 1 ] DEBUG PhysicsWorld         - Using strategy: BRUTE_FORCE
+04:31:39.081 [FXGL Background Thread 1 ] DEBUG GameScene            - Game scene initialized: 1280x720
+04:31:39.100 [FXGL Background Thread 1 ] DEBUG FXGLAssetLoaderServi - Loading from file system: file:/Users/ajaxestela/IdeaProjects/GitSomeSleep/Capstonee/target/classes/assets/textures/background/nearest4.png
+04:31:39.208 [FXGL Background Thread 1 ] DEBUG FXGLAssetLoaderServi - Loading from file system: file:/Users/ajaxestela/IdeaProjects/GitSomeSleep/Capstonee/target/classes/assets/textures/background/nearest3.png
+04:31:39.260 [FXGL Background Thread 1 ] DEBUG FXGLAssetLoaderServi - Loading from file system: file:/Users/ajaxestela/IdeaProjects/GitSomeSleep/Capstonee/target/classes/assets/textures/background/nearest2.png
+04:31:39.279 [FXGL Background Thread 1 ] DEBUG FXGLAssetLoaderServi - Loading from file system: file:/Users/ajaxestela/IdeaProjects/GitSomeSleep/Capstonee/target/classes/assets/textures/background/%20nearest1.png
+04:31:39.371 [FXGL Background Thread 1 ] DEBUG FXGL.DefaultMenu     - createMenuBodyGameMenu()
+04:31:39.384 [FXGL Background Thread 1 ] DEBUG FXGL.DefaultMenu     - createOptionsMenu()
+04:31:39.390 [FXGL Background Thread 1 ] DEBUG FXGLAssetLoaderServi - Loading from file system: jar:file:///Users/ajaxestela/.m2/repository/com/github/almasb/fxgl/21.1/fxgl-21.1.jar!/fxglassets/textures/particles/smoke.png
+04:31:39.469 [FXGL Background Thread 1 ] DEBUG FXGLAssetLoaderServi - Loading from file system: jar:file:///Users/ajaxestela/.m2/repository/com/github/almasb/fxgl/21.1/fxgl-21.1.jar!/fxglassets/textures/particles/trace_horizontal.png
+04:31:39.476 [FXGL Background Thread 1 ] DEBUG GameApplicationServi - Application scenes initialized
+04:31:39.484 [FXGL Background Thread 1 ] DEBUG SystemBundleService  - Loading FXGL system data
+04:31:39.486 [FXGL Background Thread 1 ] DEBUG FileSystemAccess     - Reading from: /Users/ajaxestela/IdeaProjects/GitSomeSleep/Capstonee/system/fxgl.bundle
+04:31:39.491 [FXGL Background Thread 1 ] DEBUG SystemBundleService  - Bundle FXGL: {}
+04:31:39.491 [FXGL Background Thread 1 ] DEBUG UpdaterService       - Checking for updates
+04:31:39.493 [FXGL Background Thread 4 ] DEBUG FXGLApplication      - Loading fonts
+04:31:39.493 [FXGL Background Thread 1 ] DEBUG FXGLApplication      - Loading default localization
+04:31:39.493 [FXGL Background Thread 4 ] DEBUG FXGLAssetLoaderServi - Loading from file system: jar:file:///Users/ajaxestela/.m2/repository/com/github/almasb/fxgl/21.1/fxgl-21.1.jar!/fxglassets/ui/fonts/VarelaRound-Regular.ttf
+04:31:39.493 [FXGL Background Thread 1 ] DEBUG FXGLAssetLoaderServi - Loading from file system: jar:file:///Users/ajaxestela/.m2/repository/com/github/almasb/fxgl/21.1/fxgl-21.1.jar!/fxglassets/languages/english.lang
+04:31:39.503 [FXGL Background Thread 1 ] INFO  FXGLApplication      - FXGL initialization took: 0.614 sec
+04:31:39.507 [JavaFX Application Thread] DEBUG Input                - Registered new binding: Left - A
+04:31:39.507 [JavaFX Application Thread] DEBUG Input                - Registered new binding: Right - D
+04:31:39.507 [JavaFX Application Thread] DEBUG Input                - Registered new binding: Jump - W
+04:31:39.507 [JavaFX Application Thread] DEBUG Input                - Registered new binding: Interact / Confirm - E
+04:31:39.507 [JavaFX Application Thread] DEBUG Input                - Registered new binding: RhythmLane0 - H
+04:31:39.507 [JavaFX Application Thread] DEBUG Input                - Registered new binding: RhythmLane1 - J
+04:31:39.507 [JavaFX Application Thread] DEBUG Input                - Registered new binding: RhythmLane2 - K
+04:31:39.507 [JavaFX Application Thread] DEBUG Input                - Registered new binding: RhythmLane3 - L
+04:31:39.507 [JavaFX Application Thread] DEBUG Input                - Registered new binding: RhythmStart - Space
+04:31:39.508 [JavaFX Application Thread] DEBUG FXGLAssetLoaderServi - Loading from file system: jar:file:///Users/ajaxestela/.m2/repository/com/github/almasb/fxgl/21.1/fxgl-21.1.jar!/fxglassets/textures/fxgl_icon.png
+04:31:39.515 [FXGL Background Thread 4 ] DEBUG FXGLAssetLoaderServi - Loading from file system: jar:file:///Users/ajaxestela/.m2/repository/com/github/almasb/fxgl/21.1/fxgl-21.1.jar!/fxglassets/ui/fonts/Abel-Regular.ttf
+04:31:39.529 [JavaFX Application Thread] DEBUG FXGLAssetLoaderServi - Loading from file system: jar:file:///Users/ajaxestela/.m2/repository/com/github/almasb/fxgl/21.1/fxgl-21.1.jar!/fxglassets/textures/fxgl_default_cursor.png
+04:31:39.530 [JavaFX Application Thread] DEBUG Input                - Registered new binding: Screenshot - CTRL+8
+04:31:39.530 [JavaFX Application Thread] DEBUG Input                - Registered new binding: System info dump - CTRL+9
+04:31:39.530 [JavaFX Application Thread] DEBUG Input                - Registered new binding: Restart - CTRL+R
+04:31:39.530 [JavaFX Application Thread] DEBUG Input                - Registered new binding: Toggle Debug Camera - CTRL+7
+04:31:39.531 [JavaFX Application Thread] DEBUG LoopRunner           - Starting loop
+04:31:39.531 [JavaFX Application Thread] DEBUG LoopRunner           - Initializing JavaFX AnimationTimerLoop
+04:31:39.532 [JavaFX Application Thread] DEBUG Input                - Clearing active input actions
+04:31:39.537 [JavaFX Application Thread] DEBUG GameApplicationServi - Removing overlay from FXGLStartupScene and adding to FXGLMainMenuDummyScene
+04:31:39.537 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - FXGLStartupScene -> FXGLMainMenuDummyScene
+04:31:39.537 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Push state: MainMenu
+04:31:39.538 [JavaFX Application Thread] DEBUG Input                - Clearing active input actions
+04:31:39.542 [JavaFX Application Thread] DEBUG GameApplicationServi - Removing overlay from FXGLMainMenuDummyScene and adding to MainMenu
+04:31:39.542 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - FXGLMainMenuDummyScene -> MainMenu
+04:31:39.839 [FXGL Background Thread 4 ] DEBUG FXGLAssetLoaderServi - Loading from file system: jar:file:///Users/ajaxestela/.m2/repository/com/github/almasb/fxgl/21.1/fxgl-21.1.jar!/fxglassets/ui/fonts/TerminalLandMono-Regular.otf
+04:31:39.866 [FXGL Background Thread 4 ] DEBUG FXGLAssetLoaderServi - Loading from file system: jar:file:///Users/ajaxestela/.m2/repository/com/github/almasb/fxgl/21.1/fxgl-21.1.jar!/fxglassets/ui/fonts/Courier-Prime.ttf
+04:31:39.869 [JavaFX Application Thread] DEBUG FXGLApplication      - Registering font factories with UI factory
+04:31:41.481 [JavaFX Application Thread] DEBUG FXGLApplication      - Exiting FXGL
+04:31:41.482 [JavaFX Application Thread] DEBUG LoopRunner           - Stopping loop
+04:31:41.482 [JavaFX Application Thread] DEBUG SystemBundleService  - Saving FXGL system data
+04:31:41.485 [JavaFX Application Thread] DEBUG FileSystemAccess     - Writing to: /Users/ajaxestela/IdeaProjects/GitSomeSleep/Capstonee/system/fxgl.bundle
+04:31:41.488 [JavaFX Application Thread] DEBUG Async                - Shutting down background threads
+04:31:41.488 [JavaFX Application Thread] DEBUG PrimaryStageWindow   - Closing main window
+04:31:41.528 [JavaFX Application Thread] DEBUG Logger               - Closing Logger

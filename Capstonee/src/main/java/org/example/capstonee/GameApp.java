@@ -6,6 +6,7 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.Viewport;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
+import javafx.beans.binding.Bindings;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 
@@ -100,15 +101,15 @@ public class GameApp extends GameApplication {
     }
 
 
+
     @Override
     protected void initGame() {
         System.out.println("GameApp: initGame started.");
 
-        // Corrected order to handle dependency: UI needs manager later via setter
         rhythmAudioPlayer = new RhythmAudioPlayer();
-        rhythmGameUI = new RhythmGameUI(getGameScene()); // Create UI instance
-        rhythmGameManager = new RhythmGameManager(getGameScene(), rhythmGameUI, rhythmAudioPlayer); // Create Manager, passing UI
-        rhythmGameUI.setGameManager(rhythmGameManager); // Set Manager reference in UI
+        rhythmGameUI = new RhythmGameUI(getGameScene());
+        rhythmGameManager = new RhythmGameManager(getGameScene(), rhythmGameUI, rhythmAudioPlayer);
+        rhythmGameUI.setGameManager(rhythmGameManager);
 
         rhythmGameManager.setOnGameEndCallback(this::returnToMainMenu);
 
@@ -117,25 +118,20 @@ public class GameApp extends GameApplication {
         instance = this;
         System.out.println("GameApp: initGame finished. Instance set.");
 
-
         try {
-            getSettings().setGlobalMusicVolume(OptionsPane.globalVolumeProperty().get());
-            getSettings().setGlobalSoundVolume(OptionsPane.globalVolumeProperty().get());
+            getSettings().globalMusicVolumeProperty().bind(
+                    Bindings.when(OptionsPane.globalMuteProperty())
+                            .then(0.0)
+                            .otherwise(OptionsPane.globalVolumeProperty())
+            );
 
-            getSettings().globalMusicVolumeProperty().bind(OptionsPane.globalVolumeProperty());
-            getSettings().globalSoundVolumeProperty().bind(OptionsPane.globalVolumeProperty()); // Bind sound volume too
+            getSettings().globalSoundVolumeProperty().bind(
+                    Bindings.when(OptionsPane.globalMuteProperty())
+                            .then(0.0)
+                            .otherwise(OptionsPane.globalVolumeProperty())
+            );
 
-            OptionsPane.globalMuteProperty().addListener((obs, oldVal, isMuted) -> {
-                if (isMuted) {
-                    getSettings().setGlobalMusicVolume(0.0);
-                    getSettings().setGlobalSoundVolume(0.0);
-                } else {
-                    getSettings().setGlobalMusicVolume(OptionsPane.globalVolumeProperty().get());
-                    getSettings().setGlobalSoundVolume(OptionsPane.globalVolumeProperty().get());
-                }
-            });
-
-            System.out.println("DEBUG: Audio settings bound to OptionsPane properties.");
+            System.out.println("DEBUG: Audio settings bound conditionally to OptionsPane properties.");
         } catch (Exception e) {
             System.err.println("Error binding audio settings to OptionsPane properties. Ensure OptionsPane methods are static and return properties.");
             e.printStackTrace();

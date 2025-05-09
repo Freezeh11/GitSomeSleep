@@ -14,11 +14,27 @@ public class SongDatabase {
         // Add your songs here
         // Make sure the paths are correct relative to your assets folder (e.g., assets/music/songfile/beatmap.txt)
         SONGS.add(new Song(
-                "Zhongli Theme",           // Name
-                "Normal",                  // Difficulty
+                "Rex Incognito",           // Name
+                "Easy",                  // Difficulty
                 "A calm, yet powerful theme.", // Description
+                "music/songfile/firstbosssong.txt", // Path to the beatmap file
+                "songs/zhongli.wav"      // Path to the music file
+        ));
+
+        SONGS.add(new Song(
+                "Termination Of Desires",           // Name
+                "Normal",                  // Difficulty
+                "A calm, yet eternal theme.", // Description
+                "music/songfile/secondbosssong.txt", // Path to the beatmap file
+                "songs/raiden.wav"      // Path to the music file
+        ));
+
+        SONGS.add(new Song(
+                "Polumnia Omnia",           // Name
+                "Hard",                  // Difficulty
+                "A calm, yet in agony of a theme.", // Description
                 "music/songfile/thirdbosssong.txt", // Path to the beatmap file
-                "music/songs/zhongli.wav"      // Path to the music file
+                "songs/scara.wav"      // Path to the music file
         ));
 
         // Add more songs like this:

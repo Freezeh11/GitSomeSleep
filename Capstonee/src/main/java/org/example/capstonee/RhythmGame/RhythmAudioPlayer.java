@@ -12,7 +12,6 @@ import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
 public class RhythmAudioPlayer {
 
     private Music currentMusic;
-    private boolean isMusicPlaying = false;
     private final AudioPlayer audioPlayer;
 
     private Sound hitSound;
@@ -20,14 +19,11 @@ public class RhythmAudioPlayer {
 
     private static final String HIT_SOUND_PATH = "sounds/hit.wav";
     private static final String MISS_SOUND_PATH = "sounds/miss.wav";
-    // REMOVED: private static final String DEFAULT_MUSIC_ASSET_PATH = "songs/zhongli.wav";
-
 
     public RhythmAudioPlayer() {
         this.audioPlayer = getAudioPlayer();
         loadSoundEffects();
     }
-
 
     private void loadSoundEffects() {
         try {
@@ -53,26 +49,19 @@ public class RhythmAudioPlayer {
         }
     }
 
-
-    // *** Modified loadMusic to always take a path and remove default ***
     public void loadMusic(String assetPath) {
-        // Stop previous music if any is playing *using this player*
-        if (currentMusic != null && isMusicPlaying) {
-            audioPlayer.stopMusic(currentMusic);
-            isMusicPlaying = false;
-        }
-        currentMusic = null; // Always release the reference to the old music
+        stopMusic();
+        currentMusic = null;
 
         try {
             System.out.println("Attempting to load music asset: " + assetPath);
-            // Assuming assetPath is correct relative to assets/
-            currentMusic = getAssetLoader().loadMusic(assetPath); // Use the provided path
+            currentMusic = getAssetLoader().loadMusic(assetPath);
 
             if (currentMusic != null) {
                 System.out.println("Successfully loaded music: " + assetPath);
                 System.out.println("Music asset loaded successfully, ready for playback.");
             } else {
-                System.err.println("Failed to load music asset (getAssetLoader returned null): " + assetPath);
+                System.err.println("Failed to load music asset (getAssetLoader returned null or asset not found): " + assetPath);
             }
         } catch (Exception e) {
             System.err.println("Exception loading music asset: " + assetPath);
@@ -81,20 +70,11 @@ public class RhythmAudioPlayer {
         }
     }
 
-    // REMOVED: Overload for default music (loadMusic())
-
-
     public void playMusic() {
-        System.out.println("Checking music state before playing...");
+        System.out.println("Attempting to play music.");
         if (currentMusic != null) {
-            if (!isMusicPlaying) {
-                System.out.println("Attempting to play music.");
-                audioPlayer.playMusic(currentMusic);
-                isMusicPlaying = true;
-                System.out.println("Music playback initiated.");
-            } else {
-                System.out.println("Music is already marked as playing. Skipping play call.");
-            }
+            audioPlayer.loopMusic(currentMusic);
+            System.out.println("Music playback initiated (looping).");
         } else {
             System.err.println("Error: Cannot play music. No music loaded or load failed.");
         }
@@ -102,20 +82,33 @@ public class RhythmAudioPlayer {
 
     public void stopMusic() {
         System.out.println("DEBUG: Received stopMusic call.");
-        if (currentMusic != null && isMusicPlaying) {
+        if (currentMusic != null) {
             audioPlayer.stopMusic(currentMusic);
-            isMusicPlaying = false;
             System.out.println("Music stopped via stopMusic.");
-        } else if (currentMusic == null) {
+            currentMusic = null;
+        } else {
             System.out.println("DEBUG: stopMusic called, but currentMusic is null.");
-        } else if (!isMusicPlaying) {
-            System.out.println("DEBUG: stopMusic called, but isMusicPlaying is false.");
         }
     }
 
+    public void pauseMusic() {
+        System.out.println("DEBUG (RhythmAudioPlayer): Pausing music.");
+        if (currentMusic != null) {
+            audioPlayer.pauseMusic(currentMusic);
+            System.out.println("DEBUG (RhythmAudioPlayer): Music pause requested.");
+        } else {
+            System.out.println("DEBUG (RhythmAudioPlayer): No music reference to pause.");
+        }
+    }
 
-    public boolean isMusicPlaying() {
-        return isMusicPlaying;
+    public void resumeMusic() {
+        System.out.println("DEBUG (RhythmAudioPlayer): Resuming music.");
+        if (currentMusic != null) {
+            audioPlayer.resumeMusic(currentMusic);
+            System.out.println("DEBUG (RhythmAudioPlayer): Music resume requested.");
+        } else {
+            System.out.println("DEBUG (RhythmAudioPlayer): No music reference to resume.");
+        }
     }
 
 
@@ -127,7 +120,6 @@ public class RhythmAudioPlayer {
         }
     }
 
-
     public void playMissSound() {
         if (missSound != null) {
             audioPlayer.playSound(missSound);
@@ -137,19 +129,12 @@ public class RhythmAudioPlayer {
     }
 
     public void stopAll() {
-        System.out.println("DEBUG: Stopping all audio via stopAll().");
+        System.out.println("DEBUG: Stopping all audio via RhythmAudioPlayer stopAll().");
 
-        if (currentMusic != null && isMusicPlaying) {
-            System.out.println("DEBUG: Stopping current music track: " + currentMusic.getAudio());
-            audioPlayer.stopMusic(currentMusic);
-        }
-        isMusicPlaying = false;
+        stopMusic();
 
-        // Explicitly stop all Music and Sound objects managed by FXGL's AudioPlayer
         FXGL.getAudioPlayer().stopAllMusic();
         FXGL.getAudioPlayer().stopAllSounds();
-
-        currentMusic = null; // Release reference
 
         System.out.println("DEBUG: Audio stop sequence completed.");
     }

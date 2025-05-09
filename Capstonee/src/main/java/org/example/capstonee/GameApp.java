@@ -1,342 +1,279 @@
 package org.example.capstonee;
 
-
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
-// Remove the old SceneFactory import if it was just the default one.
-// import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.app.scene.Viewport;
-import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.level.Level;
-import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
-import com.almasb.fxgl.event.EventBus;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
-import com.almasb.fxgl.physics.CollisionHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
-import org.example.capstonee.Cutscene.CutsceneHandler;
+
+// Import necessary classes for Rhythm Game and Menu
+import org.example.capstonee.RhythmGame.RhythmAudioPlayer;
+import org.example.capstonee.RhythmGame.RhythmGameManager;
+import org.example.capstonee.RhythmGame.RhythmGameUI;
+import org.example.capstonee.RhythmGame.RhythmGameState;
+import org.example.capstonee.RhythmGame.RhythmGameFactory;
 import org.example.capstonee.Menu.MenuSceneFactory;
-import org.example.capstonee.RhythmGame.*;
-import org.example.capstonee.Menu.MenuSceneFactory; // <--- IMPORT YOUR NEW FACTORY
+import org.example.capstonee.Song.Song; // Needed for startSelectedSong
+import org.example.capstonee.Menu.OptionsPane; // Needed if binding options
 
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-
+// Correct static imports from FXGL dsl
+// Provides access to getGameController, getDialogService, getGameWorld, getAppWidth, getAppHeight, getAssetLoader, getAudioPlayer, getInput, geti, set, geto, spawn, getGameTimer, getSettings, getSceneService
 import static com.almasb.fxgl.dsl.FXGL.*;
-
 
 public class GameApp extends GameApplication {
 
-
-    private Entity player;
-    private String nextLevelToLoad = null;
-    private boolean isTransitioning = false;
-    private String currentLevel = "tutorial";
     private RhythmAudioPlayer rhythmAudioPlayer;
     private RhythmGameUI rhythmGameUI;
     private RhythmGameManager rhythmGameManager;
 
+    private static String pendingBeatmapPath = null;
+    private static String pendingMusicAssetPath = null;
+
+    // Keep a static reference for MainMenu to call
+    private static GameApp instance;
 
     @Override
     protected void initSettings(GameSettings settings) {
-        settings.setTitle("Platformer with Rhythm");
-        settings.setVersion("0.2");
+        settings.setTitle("Rhythm Impact");
+        settings.setVersion("1.0");
         settings.setWidth(1280);
-        settings.setHeight(720);;
-        // settings.setSceneFactory(new SceneFactory()); // <--- REMOVE THIS LINE (or the default one)
-        settings.setSceneFactory(new MenuSceneFactory()); // <--- ADD THIS LINE
-        settings.setMainMenuEnabled(true);
-        // settings.setGameMenuEnabled(true); // This is usually enabled by default if MainMenu is enabled
-        settings.setApplicationMode(ApplicationMode.DEVELOPER); // Or ApplicationMode.RELEASE
+        settings.setHeight(720);
+        settings.setSceneFactory(new MenuSceneFactory());
+        settings.setMainMenuEnabled(true); // Start at Main Menu
+        settings.setGameMenuEnabled(false); // Disable game menu
+
+        // --- REMOVED AUDIO BINDING FROM HERE ---
+        // It will be moved to initGame()
+
+        settings.setApplicationMode(ApplicationMode.DEVELOPER); // Or RELEASE
     }
 
     @Override
     protected void initInput() {
-
-
-        getInput().addAction(new UserAction("Left") {
-            @Override
-            protected void onAction() {
-                if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).left();
-            }
-
-
-            @Override
-            protected void onActionEnd() {
-                if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).stop();
-            }
-        }, KeyCode.A, VirtualButton.LEFT);
-
-
-        getInput().addAction(new UserAction("Right") {
-            @Override
-            protected void onAction() {
-                if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).right();
-            }
-
-
-            @Override
-            protected void onActionEnd() {
-                if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).stop();
-            }
-        }, KeyCode.D, VirtualButton.RIGHT);
-
-
-        getInput().addAction(new UserAction("Jump") {
-            @Override
-            protected void onActionBegin() {
-                if (!rhythmGameManager.isActive()) player.getComponent(PlayerComponent.class).jump();
-            }
-        }, KeyCode.W, VirtualButton.A);
-
-
-
-
-        getInput().addAction(new UserAction("Interact / Confirm") {
-            @Override
-            protected void onActionBegin() {
-                if (!rhythmGameManager.isActive()) {
-                    var interactionZones = getGameWorld().getEntitiesByType(EntityType.INTERACTION_ZONE);
-                    for (Entity zone : interactionZones) {
-                        if (player.isColliding(zone)) {
-                            Entity npc = zone.getComponent(InteractionZoneComponent.class).getNpc();
-                            String dialog = npc.getComponent(NPCComponent.class).getDialog();
-                            System.out.println("NPC says: " + dialog + " - Starting Rhythm Game!");
-                            CutsceneHandler.playCutscene("gameCutscene_sample1.txt", npc, rhythmGameManager);
-                            break;
-                        }
-                    }
-
-
-                } else if (rhythmGameManager.getState() == RhythmGameState.GAME_ENDED) {
-                    rhythmGameManager.finalizeAndReturn();
-                }
-
-
-            }
-        }, KeyCode.E);
-
-
-
-
+        // ... (initInput method remains the same) ...
         getInput().addAction(new UserAction("RhythmLane0") {
             @Override
             protected void onActionBegin() {
-                rhythmGameManager.handleInput(0);
+                if (rhythmGameManager != null && rhythmGameManager.isActive() && rhythmGameManager.getState() == RhythmGameState.PLAYING) {
+                    rhythmGameManager.handleInput(0);
+                }
             }
         }, KeyCode.H);
-
 
         getInput().addAction(new UserAction("RhythmLane1") {
             @Override
             protected void onActionBegin() {
-                rhythmGameManager.handleInput(1);
+                if (rhythmGameManager != null && rhythmGameManager.isActive() && rhythmGameManager.getState() == RhythmGameState.PLAYING) {
+                    rhythmGameManager.handleInput(1);
+                }
             }
         }, KeyCode.J);
-
 
         getInput().addAction(new UserAction("RhythmLane2") {
             @Override
             protected void onActionBegin() {
-                rhythmGameManager.handleInput(2);
+                if (rhythmGameManager != null && rhythmGameManager.isActive() && rhythmGameManager.getState() == RhythmGameState.PLAYING) {
+                    rhythmGameManager.handleInput(2);
+                }
             }
         }, KeyCode.K);
-
 
         getInput().addAction(new UserAction("RhythmLane3") {
             @Override
             protected void onActionBegin() {
-                rhythmGameManager.handleInput(3);
+                if (rhythmGameManager != null && rhythmGameManager.isActive() && rhythmGameManager.getState() == RhythmGameState.PLAYING) {
+                    rhythmGameManager.handleInput(3);
+                }
             }
         }, KeyCode.L);
-
-
-
 
         getInput().addAction(new UserAction("RhythmStart") {
             @Override
             protected void onActionBegin() {
-                if (rhythmGameManager.isActive() && rhythmGameManager.getState() == RhythmGameState.READY) {
+                if (rhythmGameManager != null && rhythmGameManager.isActive() && rhythmGameManager.getState() == RhythmGameState.READY) {
                     rhythmGameManager.startPlaying();
                 }
             }
         }, KeyCode.SPACE);
     }
 
-    private int levelWidth;
-    private int levelHeight;
-    private void loadLevel(String levelFile) {
-        try {
-            System.out.println("Attempting to load: " + levelFile);
-
-            if (rhythmAudioPlayer != null) {
-                rhythmAudioPlayer.stopAll();
-            }
-
-            getGameController().pauseEngine();
-            getGameWorld().getEntitiesCopy()
-                    .stream()
-                    .filter(e -> e.getType() != EntityType.PLAYER)
-                    .forEach(Entity::removeFromWorld);
-
-            // Load level
-            Level level = getAssetLoader().loadLevel(levelFile, new TMXLevelLoader());
-            getGameWorld().setLevel(level);
-
-            this.currentLevel = levelFile.replace("tmx/", "").replace(".tmx", "");
-            levelWidth = level.getWidth() * 16;
-            levelHeight = level.getHeight() * 16;
-
-            // In your loadLevel() method:
-            Point2D spawnPosition = getGameWorld().getEntitiesByType(EntityType.SPAWN_POINT)
-                    .stream()
-                    .findFirst()
-                    .map(e -> {
-                        System.out.println("Found spawn point at: " + e.getPosition()); // Debug log
-                        return e.getPosition();
-                    })
-                    .orElseThrow(() -> new RuntimeException("No spawn point found in level: " + levelFile));
-
-            // Add debug output to verify player position
-            System.out.println("Setting player position to: " + spawnPosition);
-            player.setPosition(spawnPosition);
-            System.out.println("Actual player position after set: " + player.getPosition());
-
-
-            configurePlatformerViewport();
-            spawn("background");
-            NPCLocations.spawnNPCs(currentLevel);
-
-            getGameController().resumeEngine();
-            System.out.println("Successfully loaded: " + levelFile);
-
-        } catch (Exception e) {
-            System.err.println("CRITICAL ERROR loading " + levelFile);
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
 
     @Override
     protected void initGame() {
-        rhythmAudioPlayer = new RhythmAudioPlayer();
-        rhythmGameUI = new RhythmGameUI(getGameScene());
-        rhythmGameManager = new RhythmGameManager(getGameScene(), rhythmGameUI, rhythmAudioPlayer);
-        rhythmGameManager.setOnGameEndCallback(this::returnToPlatformerMode);
+        System.out.println("GameApp: initGame started.");
 
-        getGameWorld().addEntityFactory(new MapFactory());
+        // Initialize rhythm game components (ensure they are created here every time initGame runs)
+        rhythmAudioPlayer = new RhythmAudioPlayer(); // Fresh instance for each game session
+        rhythmGameUI = new RhythmGameUI(getGameScene()); // Fresh instance for each game session
+        rhythmGameManager = new RhythmGameManager(getGameScene(), rhythmGameUI, rhythmAudioPlayer); // Fresh instance
+
+        // Set the callback for when a song finishes - goes back to menu
+        rhythmGameManager.setOnGameEndCallback(this::returnToMainMenu);
+
+        // Add entity factories needed for rhythm game visuals
         getGameWorld().addEntityFactory(new RhythmGameFactory());
 
-        // Load level first to get dimensions
-        Level level = getAssetLoader().loadLevel("tmx/tutorial.tmx", new TMXLevelLoader());
-        getGameWorld().setLevel(level);
+        // Initialize static instance reference
+        instance = this; // <-- Set the instance reference here!
+        System.out.println("GameApp: initGame finished. Instance set.");
 
-        // Set level dimensions
-        levelWidth = level.getWidth() * 16;
-        levelHeight = level.getHeight() * 16;
-
-        // Find spawn point
-        Point2D spawnPosition = getGameWorld().getEntitiesByType(EntityType.SPAWN_POINT)
-                .stream()
-                .findFirst()
-                .map(Entity::getPosition)
-                .orElseThrow(() -> new RuntimeException("No spawn point found in initial level"));
-
-        // Now create player at spawn point
-        player = spawn("player", spawnPosition.getX(), spawnPosition.getY());
-        set("player", player);
-        spawn("background");
-        NPCLocations.spawnNPCs(currentLevel);
-
-        // Configure viewport after level and player are set up
-        configurePlatformerViewport();
-
-        System.out.println("Game Initialized - Platformer Mode Active.");
-
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.PLAYER, EntityType.NEXT_MAP) {
-            @Override
-            protected void onCollisionBegin(Entity player, Entity trigger) {
-                System.out.println("DEBUG: Collision detected with nextMapTrigger!");
-
-                if (rhythmGameManager.isActive()) {
-                    rhythmGameManager.finalizeAndReturn();
+        // --- ADD AUDIO BINDING HERE (already done in previous fix) ---
+        try {
+            getSettings().setGlobalMusicVolume(OptionsPane.globalVolumeProperty().get());
+            getSettings().setGlobalSoundVolume(OptionsPane.globalVolumeProperty().get());
+            getSettings().globalMusicVolumeProperty().bind(OptionsPane.globalVolumeProperty());
+            getSettings().globalSoundVolumeProperty().bind(OptionsPane.globalVolumeProperty());
+            OptionsPane.globalMuteProperty().addListener((obs, oldVal, isMuted) -> {
+                if (isMuted) {
+                    getSettings().setGlobalMusicVolume(0.0);
+                    getSettings().setGlobalSoundVolume(0.0);
+                } else {
+                    getSettings().setGlobalMusicVolume(OptionsPane.globalVolumeProperty().get());
+                    getSettings().setGlobalSoundVolume(OptionsPane.globalVolumeProperty().get());
                 }
+            });
+            System.out.println("DEBUG: Audio settings bound to OptionsPane properties.");
+        } catch (Exception e) {
+            System.err.println("Error binding audio settings to OptionsPane properties...");
+            e.printStackTrace();
+        }
+        // --- End Audio Binding ---
 
-                if (rhythmAudioPlayer.isMusicPlaying()) {
+
+        // --- Use the pending song data to start the game manager ---
+        if (pendingBeatmapPath != null && pendingMusicAssetPath != null) {
+            System.out.println("GameApp (initGame): Found pending song data. Starting rhythm game instance.");
+            try {
+                // Stop any lingering audio from the menu or previous game (though startNewGame usually cleans up)
+                if (rhythmAudioPlayer != null) {
                     rhythmAudioPlayer.stopAll();
+                    System.out.println("DEBUG (initGame): Stopped all audio before starting song.");
                 }
 
-                String nextMap = trigger.getComponent(NextMapComponent.class).getNextMap();
-                System.out.println("Player hit trigger! Loading: " + nextMap);
-                loadLevel(nextMap);
+                // Load the specific music for this song
+                rhythmAudioPlayer.loadMusic(pendingMusicAssetPath);
+
+                // Start the rhythm game setup (UI, notes loading, etc.)
+                rhythmGameManager.start(pendingBeatmapPath);
+
+                // Clear the pending data now that it's used
+                pendingBeatmapPath = null;
+                pendingMusicAssetPath = null;
+
+            } catch (Exception e) {
+                System.err.println("Failed to start rhythm game song during initGame: " + e.getMessage());
+                e.printStackTrace();
+                // Handle error - show message box and return to menu
+                // Need to use runOnceAfter because dialogs shouldn't be shown directly during initGame
+                getGameTimer().runOnceAfter(() -> {
+                    getDialogService().showMessageBox("Failed to start song:\n" + e.getMessage(), this::returnToMainMenu);
+                }, Duration.seconds(0.1)); // Small delay to ensure scene transition is stable
             }
-        });
+
+        } else {
+            // This case might happen if startNewGame() was called without going through the menu flow
+            // Or if there was an error setting the pending paths.
+            // In a rhythm game, starting without a song doesn't make sense for the main game mode.
+            System.err.println("GameApp (initGame): No pending song data found. Cannot start game session.");
+            getGameTimer().runOnceAfter(() -> {
+                getDialogService().showMessageBox("Failed to start game.\nNo song selected.", this::returnToMainMenu);
+            }, Duration.seconds(0.1));
+        }
+        // --- End pending song data usage ---
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-
-
+        // ... (initGameVars method remains the same) ...
         vars.put("score", 0);
         vars.put("combo", 0);
         vars.put("songElapsedTimeMs", 0L);
+        // Add variables needed by RhythmGameUI, like combo break text, etc.
     }
-
 
     @Override
     protected void onUpdate(double tpf) {
-        if (isTransitioning) return;
-
-        // Safety check - if we're not in rhythm game but audio is playing, stop it
-        if (!rhythmGameManager.isActive() && rhythmAudioPlayer.isMusicPlaying()) {
-            rhythmAudioPlayer.stopAll();
-        }
-
-        if (rhythmGameManager.isActive()) {
+        // ... (onUpdate method remains the same) ...
+        if (rhythmGameManager != null && rhythmGameManager.isActive()) {
             rhythmGameManager.update(tpf);
         }
     }
 
+    // --- Static Method to Start a Song from the Menu ---
+    public static void startSelectedSong(String beatmapPath, String musicAssetPath) {
+        System.out.println("GameApp (Static): Preparing to start song: " + beatmapPath);
 
+        // Store the song data in static fields
+        pendingBeatmapPath = beatmapPath;
+        pendingMusicAssetPath = musicAssetPath;
 
+        // Trigger the transition to the game scene, which will call initGame()
+        getGameController().startNewGame();
+        System.out.println("GameApp (Static): Called startNewGame(). initGame will handle song loading.");
+    }
 
-    private void configurePlatformerViewport() {
-        Viewport viewport = getGameScene().getViewport();
-        viewport.setBounds(0, 0, levelWidth, levelHeight);
-        viewport.bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0);
-        viewport.setLazy(true);
-        viewport.setZoom(3.0); // Comment out this line temporarily
+    // --- Instance Method to Start a Song ---
+    private void startRhythmGameInstance(String beatmapPath, String musicAssetPath) {
+        // ... (startRhythmGameInstance method remains the same) ...
+        System.out.println("GameApp (Instance): startRhythmGameInstance starting song: " + beatmapPath);
+
+        if (rhythmGameManager == null || rhythmAudioPlayer == null || rhythmGameUI == null) {
+            System.err.println("Rhythm game components not initialized. Re-initializing.");
+            // Call initGame() only if components are null, otherwise assume they are already created by the initial initGame() call
+            if (rhythmGameManager == null || rhythmAudioPlayer == null || rhythmGameUI == null) {
+                initGame(); // Attempt to re-initialize - though this is less ideal, could indicate a flow issue if not null after initial initGame
+            }
+            if (rhythmGameManager == null) { // Check again
+                System.err.println("Failed to initialize rhythm game components. Cannot start song.");
+                getDialogService().showMessageBox("Failed to start song.\nInitialization error.", this::returnToMainMenu);
+                return;
+            }
+        }
+
+        try {
+            if (rhythmAudioPlayer != null) {
+                rhythmAudioPlayer.stopAll();
+                System.out.println("DEBUG (startRhythmGameInstance): Stopped all audio before starting song.");
+            } else {
+                System.err.println("DEBUG (startRhythmGameInstance): rhythmAudioPlayer is null when trying to stop audio.");
+            }
+
+            // Load the specific music for this song
+            rhythmAudioPlayer.loadMusic(musicAssetPath);
+
+            // Start the rhythm game setup
+            rhythmGameManager.start(beatmapPath);
+
+            // Transition from Menu Scene to Game Scene
+            System.out.println("GameApp (Instance): Transitioning to Game Scene.");
+            getGameController().startNewGame();
+
+        } catch (Exception e) {
+            System.err.println("Failed to start rhythm game song: " + e.getMessage());
+            e.printStackTrace();
+            getDialogService().showMessageBox("Failed to start song:\n" + e.getMessage(), this::returnToMainMenu);
+        }
     }
 
 
-    private void returnToPlatformerMode() {
-        FXGL.runOnce(() -> {
-            configurePlatformerViewport();
-            getGameWorld().getEntitiesCopy().forEach(e -> {
-                if (e.getType() != RhythmEntityType.RHYTHM_NOTE &&
-                        e.getType() != RhythmEntityType.HIT_ZONE_MARKER &&
-                        e.getType() != RhythmEntityType.BACKGROUND) {
-                    e.setVisible(true);
-                }
-            });
+    // --- Method to Return to Main Menu ---
+    private void returnToMainMenu() {
+        // ... (returnToMainMenu method remains the same) ...
+        System.out.println("GameApp (Instance): Returning to Main Menu.");
+        if (rhythmAudioPlayer != null) {
+            rhythmAudioPlayer.stopAll();
+            System.out.println("DEBUG (returnToMainMenu): Stopped all audio before going to menu.");
+        } else {
+            System.err.println("DEBUG (returnToMainMenu): rhythmAudioPlayer is null when trying to stop audio.");
+        }
 
-            if (player != null) {
-                player.setVisible(true);
-                player.getComponent(PlayerComponent.class).stop();
-            }
-
-            rhythmGameUI.hideAll();
-            spawn("background");
-            NPCLocations.spawnNPCs(currentLevel);
-        }, Duration.seconds(0)); // Added Duration parameter
+        getGameController().gotoMainMenu();
+        System.out.println("GameApp (Instance): Transitioned to Main Menu scene.");
     }
 
 

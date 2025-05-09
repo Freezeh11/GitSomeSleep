@@ -79,6 +79,7 @@ public class OptionsPane extends VBox {
         return globalVolumeProperty;
     }
 
+
     public static BooleanProperty globalMuteProperty() {
         return globalMuteProperty;
     }

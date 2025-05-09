@@ -12,17 +12,15 @@ import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
 public class RhythmAudioPlayer {
 
     private Music currentMusic;
-    private boolean isMusicPlaying = false;  // Add this flag
-    private final AudioPlayer audioPlayer; // Make final if initialized in constructor
+    private boolean isMusicPlaying = false;
+    private final AudioPlayer audioPlayer;
 
     private Sound hitSound;
     private Sound missSound;
 
-    // Consider making sound paths constants
     private static final String HIT_SOUND_PATH = "sounds/hit.wav";
     private static final String MISS_SOUND_PATH = "sounds/miss.wav";
-    // Default music path, can be overridden or passed to loadMusic
-    private static final String DEFAULT_MUSIC_PATH = "songs/zhongli.wav";
+    // REMOVED: private static final String DEFAULT_MUSIC_ASSET_PATH = "songs/zhongli.wav";
 
 
     public RhythmAudioPlayer() {
@@ -50,29 +48,29 @@ public class RhythmAudioPlayer {
         } catch (Exception e) {
             System.err.println("Exception during sound effect loading.");
             e.printStackTrace();
-            // Set to null explicitly on failure
             hitSound = null;
             missSound = null;
         }
     }
 
 
-    // Allow loading specific music files
+    // *** Modified loadMusic to always take a path and remove default ***
     public void loadMusic(String assetPath) {
-        // Stop previous music if any is playing
-        if (currentMusic != null) {
+        // Stop previous music if any is playing *using this player*
+        if (currentMusic != null && isMusicPlaying) {
             audioPlayer.stopMusic(currentMusic);
-            currentMusic = null; // Release reference
+            isMusicPlaying = false;
         }
+        currentMusic = null; // Always release the reference to the old music
 
         try {
             System.out.println("Attempting to load music asset: " + assetPath);
-            currentMusic = getAssetLoader().loadMusic(assetPath);
+            // Assuming assetPath is correct relative to assets/
+            currentMusic = getAssetLoader().loadMusic(assetPath); // Use the provided path
 
             if (currentMusic != null) {
                 System.out.println("Successfully loaded music: " + assetPath);
-                // Optional: Set looping or volume defaults here if needed
-                // currentMusic.setCycleCount(Music.INDEFINITE); // For looping
+                System.out.println("Music asset loaded successfully, ready for playback.");
             } else {
                 System.err.println("Failed to load music asset (getAssetLoader returned null): " + assetPath);
             }
@@ -83,33 +81,39 @@ public class RhythmAudioPlayer {
         }
     }
 
-    // Overload for default music if needed
-    public void loadMusic() {
-        loadMusic(DEFAULT_MUSIC_PATH);
-    }
+    // REMOVED: Overload for default music (loadMusic())
 
 
     public void playMusic() {
         System.out.println("Checking music state before playing...");
         if (currentMusic != null) {
-            System.out.println("Attempting to play music.");
-            audioPlayer.playMusic(currentMusic);
-            isMusicPlaying = true;  // Set flag when playing
-            System.out.println("Music playback initiated.");
+            if (!isMusicPlaying) {
+                System.out.println("Attempting to play music.");
+                audioPlayer.playMusic(currentMusic);
+                isMusicPlaying = true;
+                System.out.println("Music playback initiated.");
+            } else {
+                System.out.println("Music is already marked as playing. Skipping play call.");
+            }
         } else {
             System.err.println("Error: Cannot play music. No music loaded or load failed.");
         }
     }
 
     public void stopMusic() {
-        if (currentMusic != null) {
+        System.out.println("DEBUG: Received stopMusic call.");
+        if (currentMusic != null && isMusicPlaying) {
             audioPlayer.stopMusic(currentMusic);
-            isMusicPlaying = false;  // Clear flag when stopped
-            System.out.println("Music stopped.");
+            isMusicPlaying = false;
+            System.out.println("Music stopped via stopMusic.");
+        } else if (currentMusic == null) {
+            System.out.println("DEBUG: stopMusic called, but currentMusic is null.");
+        } else if (!isMusicPlaying) {
+            System.out.println("DEBUG: stopMusic called, but isMusicPlaying is false.");
         }
     }
 
-    // Add this method to check playback state
+
     public boolean isMusicPlaying() {
         return isMusicPlaying;
     }
@@ -117,8 +121,6 @@ public class RhythmAudioPlayer {
 
     public void playHitSound() {
         if (hitSound != null) {
-            // Ensure volume is set correctly
-            // audioPlayer.setGlobalSoundVolume(getSettings().getGlobalSoundVolume()); // Ensure sync if needed
             audioPlayer.playSound(hitSound);
         } else {
             System.err.println("Attempted to play hit sound, but it was not loaded.");
@@ -128,7 +130,6 @@ public class RhythmAudioPlayer {
 
     public void playMissSound() {
         if (missSound != null) {
-            // audioPlayer.setGlobalSoundVolume(getSettings().getGlobalSoundVolume()); // Ensure sync if needed
             audioPlayer.playSound(missSound);
         } else {
             System.err.println("Attempted to play miss sound, but it was not loaded.");
@@ -136,16 +137,20 @@ public class RhythmAudioPlayer {
     }
 
     public void stopAll() {
-        System.out.println("DEBUG: Stopping all audio");
-        isMusicPlaying = false;  // Clear the flag
+        System.out.println("DEBUG: Stopping all audio via stopAll().");
 
-        if (currentMusic != null) {
-            System.out.println("DEBUG: Stopping current music: " + currentMusic.getAudio());
-            FXGL.getAudioPlayer().stopMusic(currentMusic);
-            currentMusic = null;
+        if (currentMusic != null && isMusicPlaying) {
+            System.out.println("DEBUG: Stopping current music track: " + currentMusic.getAudio());
+            audioPlayer.stopMusic(currentMusic);
         }
+        isMusicPlaying = false;
 
+        // Explicitly stop all Music and Sound objects managed by FXGL's AudioPlayer
+        FXGL.getAudioPlayer().stopAllMusic();
         FXGL.getAudioPlayer().stopAllSounds();
-        System.out.println("DEBUG: Audio stopped completely");
+
+        currentMusic = null; // Release reference
+
+        System.out.println("DEBUG: Audio stop sequence completed.");
     }
 }

@@ -123,6 +123,7 @@ public class MapFactory implements EntityFactory {
         String nextMap = "tmx/level"+ num +".tmx";
         System.out.println("DEBUG: Forcing nextMap to: " + nextMap);
 
+       // getAudioPlayer().stopAllSoundsAndMusic();
         return entityBuilder(data)
                 .type(EntityType.NEXT_MAP)
                 .bbox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))

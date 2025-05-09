@@ -14,8 +14,6 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class CutsceneHandler {
 
-
-
     public static void playCutscene(String cutsceneFileName, Entity npc, RhythmGameManager rhythmGameManager) {
         if (getCutsceneService() == null) {
             System.err.println("Error: CutsceneService is not available.");
@@ -33,17 +31,39 @@ public class CutsceneHandler {
             }
             return;
         }
+
         var cutscene = new Cutscene(lines);
         System.out.println("Starting cutscene: " + cutsceneFileName);
-        getCutsceneService().startCutscene(cutscene);
-//        rhythmGameManager.start("beatmap.txt");
 
-        FXGL.getGameTimer().runOnceAfter(()->{
+        // --- Modification Start ---
+        // Define what should happen AFTER the cutscene finishes
+        Runnable onCutsceneFinished = () -> {
+            System.out.println("Cutscene finished. Starting Rhythm Game setup...");
             try {
+                // Call the start method here, NOW that the cutscene is gone
                 rhythmGameManager.start("assets/music/songfile/thirdbosssong.txt");
+                // The rhythm game will now be in the READY state, waiting for SPACE
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.err.println("Failed to start rhythm game after cutscene: " + e.getMessage());
+                e.printStackTrace(); // Print stack trace for debugging
+                // Handle the error - maybe show an error dialog?
+                getDialogService().showMessageBox("Error starting rhythm game: " + e.getMessage());
+                // Ensure game returns to normal state if rhythm game fails to start
+                // rhythmGameManager.finalizeAndReturn(); // Or a dedicated error state cleanup
             }
-        }, Duration.seconds(0));
+        };
+
+        // Start the cutscene and provide the runnable to execute when it's done
+        getCutsceneService().startCutscene(cutscene, onCutsceneFinished);
+
+        // REMOVE the old runOnceAfter call, as it starts the rhythm game too early
+        // FXGL.getGameTimer().runOnceAfter(()->{
+        //     try {
+        //         rhythmGameManager.start("assets/music/songfile/thirdbosssong.txt");
+        //     } catch (IOException e) {
+        //         throw new RuntimeException(e);
+        //     }
+        // }, Duration.seconds(0));
+        // --- Modification End ---
     }
 }

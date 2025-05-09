@@ -12,7 +12,7 @@ public class RhythmNoteComponent extends Component {
     private final long targetHitTimestamp;
     private final int laneIndex;
 
-    public RhythmNoteComponent(double speed, long targetHitTimestamp, int laneIndex) {
+    public RhythmNoteComponent(double speed, long targetHitTimestamp, int laneIndex, double hitLineY) {
 
         if (speed <= 0) {
             System.err.println("Warning: RhythmNoteComponent created with non-positive speed: " + speed);

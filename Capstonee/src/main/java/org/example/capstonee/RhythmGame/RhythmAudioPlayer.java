@@ -3,6 +3,7 @@ package org.example.capstonee.RhythmGame;
 import com.almasb.fxgl.audio.AudioPlayer;
 import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.audio.Sound;
+import com.almasb.fxgl.dsl.FXGL;
 
 import static com.almasb.fxgl.dsl.FXGL.getAudioPlayer;
 import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
@@ -11,6 +12,7 @@ import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
 public class RhythmAudioPlayer {
 
     private Music currentMusic;
+    private boolean isMusicPlaying = false;  // Add this flag
     private final AudioPlayer audioPlayer; // Make final if initialized in constructor
 
     private Sound hitSound;
@@ -91,23 +93,25 @@ public class RhythmAudioPlayer {
         System.out.println("Checking music state before playing...");
         if (currentMusic != null) {
             System.out.println("Attempting to play music.");
-            // Ensure volume is set correctly before playing
-            // audioPlayer.setGlobalMusicVolume(getSettings().getGlobalMusicVolume()); // Ensure sync if needed
             audioPlayer.playMusic(currentMusic);
+            isMusicPlaying = true;  // Set flag when playing
             System.out.println("Music playback initiated.");
         } else {
             System.err.println("Error: Cannot play music. No music loaded or load failed.");
         }
     }
 
-
     public void stopMusic() {
         if (currentMusic != null) {
             audioPlayer.stopMusic(currentMusic);
+            isMusicPlaying = false;  // Clear flag when stopped
             System.out.println("Music stopped.");
-            // Optional: Release music resource if not needed again soon?
-            // currentMusic = null; // Depends on whether you reload it often
         }
+    }
+
+    // Add this method to check playback state
+    public boolean isMusicPlaying() {
+        return isMusicPlaying;
     }
 
 
@@ -129,5 +133,19 @@ public class RhythmAudioPlayer {
         } else {
             System.err.println("Attempted to play miss sound, but it was not loaded.");
         }
+    }
+
+    public void stopAll() {
+        System.out.println("DEBUG: Stopping all audio");
+        isMusicPlaying = false;  // Clear the flag
+
+        if (currentMusic != null) {
+            System.out.println("DEBUG: Stopping current music: " + currentMusic.getAudio());
+            FXGL.getAudioPlayer().stopMusic(currentMusic);
+            currentMusic = null;
+        }
+
+        FXGL.getAudioPlayer().stopAllSounds();
+        System.out.println("DEBUG: Audio stopped completely");
     }
 }

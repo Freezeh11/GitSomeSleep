@@ -1,6 +1,9 @@
 package org.example.capstonee;
 
+import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
@@ -75,4 +78,5 @@ public class PlayerComponent extends Component {
             physics.setVelocityY(JUMP_SPEED);
         }
     }
+
 }

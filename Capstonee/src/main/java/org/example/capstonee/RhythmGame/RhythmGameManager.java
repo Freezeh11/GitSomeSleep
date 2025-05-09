@@ -242,45 +242,45 @@ public class RhythmGameManager {
     }
 
     public void finalizeAndReturn() {
-        // Only allow finalizing from the ended state
+        // Stop audio first
+        if (audioPlayer != null) {
+            audioPlayer.stopAll();
+            System.out.println("DEBUG: Stopped all audio in finalizeAndReturn");
+        }
+
+        // Then proceed with other cleanup
         if (state != RhythmGameState.GAME_ENDED) {
             System.out.println("Cannot finalize, game not in GAME_ENDED state.");
             return;
         }
         System.out.println("Finalizing rhythm game and preparing return...");
 
-        // Ensure cleanup happens before setting isActive to false
-        cleanupEntities(); // Double check cleanup
+        cleanupEntities();
         gameUI.cleanup();
-        //audioPlayer.cleanup(); // Add cleanup for audio player if needed
 
         isActive = false;
-        state = RhythmGameState.READY; // Reset state for potential restart
+        state = RhythmGameState.READY;
         songFinishedNaturally = false;
-        nextNoteIndexToSpawn = 0; // Reset beatmap progress
-        beatmap = null; // Clear beatmap data
+        nextNoteIndexToSpawn = 0;
+        beatmap = null;
 
-        // Restore non-rhythm game elements visibility
+        // Restore visibility of all non-rhythm game entities
+        getGameWorld().getEntitiesCopy().forEach(e -> {
+            if (e.getType() != RhythmEntityType.RHYTHM_NOTE &&
+                    e.getType() != RhythmEntityType.HIT_ZONE_MARKER &&
+                    e.getType() != RhythmEntityType.BACKGROUND) {
+                e.setVisible(true);
+            }
+        });
+
+        // Explicitly ensure player is visible
         Entity player = geto("player");
-        if (player != null) player.setVisible(true);
-        getGameWorld().getEntitiesCopy().stream()
-                .filter(e -> e.getType() != RhythmEntityType.RHYTHM_NOTE
-                                && e.getType() != RhythmEntityType.HIT_ZONE_MARKER
-                                && e.getType() != RhythmEntityType.BACKGROUND // Also don't show rhythm background again
-                        // Add other rhythm-specific types if any
-                )
-                .forEach(e -> e.setVisible(true)); // Make others visible again
-
-        // Reset viewport if necessary (depends on what the callback does)
-        // Viewport viewport = getGameScene().getViewport();
-        // viewport.bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0); // Example re-binding
-
+        if (player != null) {
+            player.setVisible(true);
+        }
 
         if (onGameEndCallback != null) {
-            System.out.println("Executing onGameEndCallback...");
             onGameEndCallback.run();
-        } else {
-            System.err.println("Warning: onGameEndCallback is null in RhythmGameManager. Cannot trigger return sequence.");
         }
     }
 

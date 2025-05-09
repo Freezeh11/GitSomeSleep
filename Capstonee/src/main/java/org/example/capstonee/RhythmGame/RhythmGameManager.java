@@ -38,10 +38,10 @@ public class RhythmGameManager {
     private boolean songFinishedNaturally = false;
 
     private final RhythmAudioPlayer audioPlayer;
-    private final RhythmGameUI gameUI;
+    private final RhythmGameUI gameUI; // Needs a method to call finalizeAndReturn? No, UI *calls* finalizeAndReturn
     private final GameScene gameScene;
     private List<NoteInfo> beatmap;
-    private Runnable onGameEndCallback;
+    private Runnable onGameEndCallback; // Called by finalizeAndReturn
 
     public RhythmGameManager(GameScene gameScene, RhythmGameUI gameUI, RhythmAudioPlayer audioPlayer) {
         this.gameScene = gameScene;
@@ -83,7 +83,7 @@ public class RhythmGameManager {
         set("combo", 0);
         set("songElapsedTimeMs", 0L);
 
-        gameUI.setup();
+        gameUI.setup(); // UI setup happens here
         gameUI.showReadyScreen();
         spawnHitZoneMarkers();
 
@@ -186,36 +186,46 @@ public class RhythmGameManager {
         System.out.println("Ending Rhythm Game Session...");
         state = RhythmGameState.GAME_ENDED;
         audioPlayer.stopMusic();
-        gameUI.showEndScreen(songFinishedNaturally, geti("score"));
-        System.out.println("Rhythm Game Ended. Waiting for finalization.");
+        gameUI.showEndScreen(songFinishedNaturally, geti("score")); // Show end screen UI
+        System.out.println("Rhythm Game Ended. Waiting for dialog confirmation.");
     }
 
+    // This method is called by the UI when the user confirms the end screen
     public void finalizeAndReturn() {
+        // Check state before finalizing - must be in ENDED state or transitioning from it
         if (state != RhythmGameState.GAME_ENDED) {
             System.err.println("Cannot finalize, game not in GAME_ENDED state. Current state: " + state);
-            return;
+            // Potentially force state or add error handling
+            // return; // Or proceed anyway if cleanup is robust
         }
         System.out.println("Finalizing rhythm game and preparing return...");
 
+        // Ensure audio is completely stopped
         if (audioPlayer != null) {
             audioPlayer.stopAll();
             System.out.println("DEBUG: Stopped all audio in finalizeAndReturn");
         }
 
-        cleanupEntities();
-        gameUI.cleanup();
+        cleanupEntities(); // Clean up visual entities
+        // gameUI.cleanup(); // UI cleanup is now handled *before* showing the dialog in the UI itself
 
-        isActive = false;
-        state = RhythmGameState.READY;
+        isActive = false; // Reset active state
+        state = RhythmGameState.READY; // Reset state for the next game session
         songFinishedNaturally = false;
         nextNoteIndexToSpawn = 0;
-        beatmap = null;
+        beatmap = null; // Release beatmap
 
+        // Call the callback (which returns to menu in GameApp)
         if (onGameEndCallback != null) {
             System.out.println("DEBUG: Calling onGameEndCallback to return to menu.");
-            getGameTimer().runOnceAfter(onGameEndCallback, Duration.seconds(2.0));
+            // The dialog service showing the box pauses the game loop.
+            // Calling the callback directly will handle the scene transition after the dialog is closed.
+            // No need for a timer here because finalizeAndReturn is called by the dialog button action
+            onGameEndCallback.run();
         } else {
             System.err.println("onGameEndCallback is null!");
+            // Fallback: Directly go to main menu if callback is missing
+            getGameController().gotoMainMenu();
         }
     }
 

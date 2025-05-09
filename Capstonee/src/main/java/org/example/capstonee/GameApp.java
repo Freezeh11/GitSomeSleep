@@ -26,7 +26,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class GameApp extends GameApplication {
 
     private RhythmAudioPlayer rhythmAudioPlayer;
-    private RhythmGameUI rhythmGameUI;
+    private RhythmGameUI rhythmGameUI; // Now needs setter
     private RhythmGameManager rhythmGameManager;
 
     private static String pendingBeatmapPath = null;
@@ -104,9 +104,11 @@ public class GameApp extends GameApplication {
     protected void initGame() {
         System.out.println("GameApp: initGame started.");
 
+        // Corrected order to handle dependency: UI needs manager later via setter
         rhythmAudioPlayer = new RhythmAudioPlayer();
-        rhythmGameUI = new RhythmGameUI(getGameScene());
-        rhythmGameManager = new RhythmGameManager(getGameScene(), rhythmGameUI, rhythmAudioPlayer);
+        rhythmGameUI = new RhythmGameUI(getGameScene()); // Create UI instance
+        rhythmGameManager = new RhythmGameManager(getGameScene(), rhythmGameUI, rhythmAudioPlayer); // Create Manager, passing UI
+        rhythmGameUI.setGameManager(rhythmGameManager); // Set Manager reference in UI
 
         rhythmGameManager.setOnGameEndCallback(this::returnToMainMenu);
 
@@ -121,7 +123,7 @@ public class GameApp extends GameApplication {
             getSettings().setGlobalSoundVolume(OptionsPane.globalVolumeProperty().get());
 
             getSettings().globalMusicVolumeProperty().bind(OptionsPane.globalVolumeProperty());
-            getSettings().globalSoundVolumeProperty().bind(OptionsPane.globalVolumeProperty());
+            getSettings().globalSoundVolumeProperty().bind(OptionsPane.globalVolumeProperty()); // Bind sound volume too
 
             OptionsPane.globalMuteProperty().addListener((obs, oldVal, isMuted) -> {
                 if (isMuted) {
@@ -162,7 +164,7 @@ public class GameApp extends GameApplication {
                 System.err.println("Failed to start rhythm game song during initGame: " + e.getMessage());
                 e.printStackTrace();
                 getGameTimer().runOnceAfter(() -> {
-                    getDialogService().showMessageBox("Failed to start song:\n" + e.getMessage(), this::returnToMainMenu);
+                    getDialogService().showMessageBox("Failed to start song.\n" + e.getMessage(), this::returnToMainMenu);
                 }, Duration.seconds(0.1));
             }
 

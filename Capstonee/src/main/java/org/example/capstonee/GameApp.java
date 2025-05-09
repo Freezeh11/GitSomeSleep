@@ -40,18 +40,13 @@ public class GameApp extends GameApplication {
         settings.setTitle("Platformer with Rhythm");
         settings.setVersion("0.2");
         settings.setWidth(1280);
-        settings.setHeight(720);
+        settings.setHeight(720);;
         // settings.setSceneFactory(new SceneFactory()); // <--- REMOVE THIS LINE (or the default one)
         settings.setSceneFactory(new MenuSceneFactory()); // <--- ADD THIS LINE
         settings.setMainMenuEnabled(true);
         // settings.setGameMenuEnabled(true); // This is usually enabled by default if MainMenu is enabled
         settings.setApplicationMode(ApplicationMode.DEVELOPER); // Or ApplicationMode.RELEASE
     }
-
-
-
-
-
 
     @Override
     protected void initInput() {

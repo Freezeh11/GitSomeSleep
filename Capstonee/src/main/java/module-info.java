@@ -6,6 +6,7 @@ open module org.example.capstonee {
     requires com.almasb.fxgl.all;
     requires java.desktop;
     requires com.fasterxml.jackson.core;
+    requires com.gluonhq.attach.audio;
 
     exports org.example.capstonee;
 }

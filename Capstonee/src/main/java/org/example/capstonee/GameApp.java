@@ -7,6 +7,8 @@ import com.almasb.fxgl.app.scene.Viewport;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
 
@@ -27,11 +29,13 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 public class GameApp extends GameApplication {
 
     private RhythmAudioPlayer rhythmAudioPlayer;
-    private RhythmGameUI rhythmGameUI; // Now needs setter
+    private RhythmGameUI rhythmGameUI;
     private RhythmGameManager rhythmGameManager;
 
     private static String pendingBeatmapPath = null;
     private static String pendingMusicAssetPath = null;
+
+    private final BooleanProperty isGamePaused = new SimpleBooleanProperty(false);
 
     private String currentBeatmapPath = null;
     private String currentMusicAssetPath = null;
@@ -48,9 +52,9 @@ public class GameApp extends GameApplication {
         settings.setSceneFactory(new MenuSceneFactory());
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
-
         settings.setApplicationMode(ApplicationMode.DEVELOPER);
     }
+
 
     @Override
     protected void initInput() {
@@ -138,6 +142,17 @@ public class GameApp extends GameApplication {
         }
 
 
+        isGamePaused.addListener((obs, wasPaused, isNowPaused) -> {
+            if (isNowPaused) {
+                System.out.println("GameApp: Game Paused (Custom Listener). Pausing music.");
+                pauseGameMusic();
+            } else {
+                System.out.println("GameApp: Game Resumed (Custom Listener). Resuming music.");
+                resumeGameMusic();
+            }
+        });
+
+
         if (pendingBeatmapPath != null && pendingMusicAssetPath != null) {
             System.out.println("GameApp (initGame): Found pending song data. Starting rhythm game instance.");
             try {
@@ -185,6 +200,37 @@ public class GameApp extends GameApplication {
             rhythmGameManager.update(tpf);
         }
     }
+
+
+
+    protected void onEnterGameMenu() {
+        System.out.println("GameApp: Entering Game Menu. Setting custom pause state to true.");
+        isGamePaused.set(true);
+    }
+
+
+    protected void onExitGameMenu() {
+        System.out.println("GameApp: Exiting Game Menu. Setting custom pause state to false.");
+        isGamePaused.set(false);
+    }
+
+
+    public static void pauseGame() {
+        if (instance != null) {
+            instance.isGamePaused.set(true);
+        }
+    }
+
+    public static void resumeGame() {
+        if (instance != null) {
+            instance.isGamePaused.set(false);
+        }
+    }
+
+    public static boolean isPaused() {
+        return instance != null && instance.isGamePaused.get();
+    }
+
 
     public static void startSelectedSong(String beatmapPath, String musicAssetPath) {
         System.out.println("GameApp (Static): Preparing to start song: " + beatmapPath);

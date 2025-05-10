@@ -1,17 +1,17 @@
 package org.example.capstonee;
+import org.example.capstonee.Note;
+
 import java.awt.geom.Rectangle2D;
-public class TapNote extends Note{
+public class TapNote extends Note {
 
 	public TapNote(char l, double time) {
 		MOVING = false;
-		x = laneCharToInt(l)*WIDTH;
-		y = -50;
+		x = laneCharToInt(l)*WIDTH + WIDTH/2;
+		y = -WIDTH * 2; // Start above screen
 		LANE = l;
 		endTime = time;
 		startTime = endTime - (super.SPEED*super.SCONST);
-		// Ensure this line exists:
-		rect = new Rectangle2D.Double(x, y, WIDTH, HEIGHT);
-		System.out.println("Created note with rect: " + rect); // Debug
+		rect = new Rectangle2D.Double(x - WIDTH/2, y - WIDTH/2, WIDTH, WIDTH);
 	}
 	public TapNote(int l, double time) {
 		MOVING = false;
@@ -31,18 +31,18 @@ public class TapNote extends Note{
 		startTime = endTime - (super.SPEED*super.SCONST);
 		rect = new Rectangle2D.Double(this.x, this.y, WIDTH, HEIGHT);
 	}
-	
+
 	public void setTarget(Rectangle2D.Double s, double releaseTime) {
 		setTarget(s);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "{" + LANE + "," + endTime + "," + MOVING + "}";
 	}
-	
+
 	// Dummy methods to make the abstract class happy
-	
+
 	@Override
 	public double getReleaseTime() {
 		return getEndTime();
@@ -61,5 +61,5 @@ public class TapNote extends Note{
 	protected boolean isTracked() {
 		return false;
 	}
-	
+
 }

@@ -116,7 +116,18 @@ public class OsuParser{
 	}
 	String[] getDifficulties(String p) {
 		LinkedList<String> s = new LinkedList<>();
-		File[] dir = new File(p).listFiles();
+		File directory = new File(p); // Create the File object for the directory
+		File[] dir = directory.listFiles(); // Get the list of files
+
+		// *** Add null check here ***
+		if (dir == null) {
+			System.err.println("Error: Could not list files in directory: " + p);
+			System.err.println("Reason: Path is not a directory, or directory does not exist, or permissions error.");
+			// Return an empty array so Main.main doesn't crash when checking .length
+			return new String[0];
+		}
+
+		// The loop is now safe because dir is guaranteed not to be null
 		for(File i:dir) {
 			if(i.isFile() && i.getName().endsWith(".osu")) {
 				s.add(i.getName());

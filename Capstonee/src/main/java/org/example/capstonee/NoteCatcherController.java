@@ -38,6 +38,9 @@ public class NoteCatcherController {
 			}
 		}
 	}
+
+
+
 	public Rectangle2D.Double[] getList(){
 		Rectangle2D.Double[] temp = new Rectangle2D.Double[catchers.length];
 		for(int i = 0; i < catchers.length; i++) {

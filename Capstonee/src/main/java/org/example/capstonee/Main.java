@@ -73,7 +73,8 @@ public class Main extends JPanel {
 				j.getHeight() - catcher.getBindingBox().getMaxY()
 		);
 
-		String folderPath = "src/main/resources/beatmaps/2027343 DECO_27 - Salamander feat Hatsune Miku/";
+		String folderPath = "Capstonee/src/main/resources/beatmaps/2266557 nyankobrq & yaca - twinkle night (feat somunia)/";
+		System.out.println("Loading beatmap from: " + folderPath);
 
 		OsuParser osuparse = new OsuParser(folderPath);
 		String[] possibleDiffs = osuparse.getDifficulties();
